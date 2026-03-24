@@ -3,290 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🦜 LinguaBird — 影音英文學習站</title>
+<title>🦜 LinguaBird</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          duo: { green: '#58CC02', greenDark: '#46A302', blue: '#1CB0F6', blueDark: '#0A91D4', yellow: '#FFC800', yellowDark: '#E5B400', red: '#FF4B4B', pink: '#FF86D0', purple: '#CE82FF', gray: '#AFAFAF' }
-        },
-        fontFamily: { nunito: ['Nunito', 'sans-serif'] },
-        borderRadius: { '2xl': '1rem', '3xl': '1.5rem' }
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        green:  { duo: '#58CC02', dark: '#46A302' },
+        blue:   { duo: '#1CB0F6', dark: '#0A91D4' },
+        yellow: { duo: '#FFC800', dark: '#E5B400' },
+        red:    { duo: '#FF4B4B', dark: '#CC0000' },
+        pink:   { duo: '#FF86D0', dark: '#CC5EAA' },
+        purple: { duo: '#CE82FF', dark: '#A855F7' },
       }
     }
   }
+}
 </script>
 <style>
-  * { font-family: 'Nunito', sans-serif; box-sizing: border-box; }
-  body { background: #F7F7F7; }
+* { font-family: 'Nunito', sans-serif; box-sizing: border-box; }
+body { background: #F7F7F7; min-height: 100vh; }
 
-  /* Duolingo-style 3D buttons */
-  .btn-duo {
-    position: relative;
-    border-bottom: 4px solid transparent;
-    transition: transform 0.1s, border-bottom 0.1s;
-    cursor: pointer;
-    user-select: none;
-  }
-  .btn-duo:active { transform: translateY(3px); border-bottom-width: 1px !important; }
+/* 3D Duolingo buttons */
+.btn { position: relative; border-bottom: 4px solid transparent; transition: transform 0.1s, border-bottom-width 0.1s; cursor: pointer; user-select: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 14px; }
+.btn:active { transform: translateY(3px); border-bottom-width: 1px !important; }
+.btn-green  { background: #58CC02; border-color: #46A302; color: #fff; }
+.btn-blue   { background: #1CB0F6; border-color: #0A91D4; color: #fff; }
+.btn-yellow { background: #FFC800; border-color: #E5B400; color: #5C3D00; }
+.btn-red    { background: #FF4B4B; border-color: #CC0000; color: #fff; }
+.btn-pink   { background: #FF86D0; border-color: #CC5EAA; color: #fff; }
+.btn-gray   { background: #E5E5E5; border-color: #CFCFCF; color: #666; }
 
-  .btn-green  { background: #58CC02; border-color: #46A302; color: white; }
-  .btn-blue   { background: #1CB0F6; border-color: #0A91D4; color: white; }
-  .btn-yellow { background: #FFC800; border-color: #E5B400; color: #5C3D00; }
-  .btn-red    { background: #FF4B4B; border-color: #CC0000; color: white; }
-  .btn-pink   { background: #FF86D0; border-color: #CC5EAA; color: white; }
-  .btn-gray   { background: #E5E5E5; border-color: #AFAFAF; color: #777; }
+/* Cards */
+.card { background: #fff; border-radius: 16px; border: 2px solid #E5E5E5; border-bottom: 4px solid #E5E5E5; }
+.card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
 
-  .card-duo {
-    background: white;
-    border-radius: 1rem;
-    border: 2px solid #E5E5E5;
-    border-bottom: 4px solid #E5E5E5;
-    transition: box-shadow 0.2s;
-  }
-  .card-duo:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+/* Checkbox */
+.chk { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #E5E5E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
+.chk.on { background: #58CC02; border-color: #46A302; }
 
-  /* Progress bar shimmer */
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-  .progress-shimmer {
-    background: linear-gradient(90deg, #58CC02 30%, #7AE52A 50%, #58CC02 70%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s ease-in-out;
-  }
+/* Tab */
+.tab { border-bottom: 3px solid transparent; transition: all 0.2s; font-weight: 800; cursor: pointer; padding: 6px 14px; border-radius: 10px 10px 0 0; color: #aaa; }
+.tab.on { border-color: #58CC02; color: #58CC02; }
 
-  /* Word card pop */
-  @keyframes popIn {
-    0%   { transform: scale(0.7) translateY(40px); opacity: 0; }
-    70%  { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
-  }
-  .pop-in { animation: popIn 0.35s cubic-bezier(.36,.07,.19,.97) both; }
+/* Modal */
+#modal { display: none; }
+#modal.on { display: flex; }
 
-  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
-  .fade-in { animation: fadeIn 0.3s ease both; }
+/* Subtitle bold highlight */
+#subArea b { color: #1CB0F6; background: rgba(28,176,246,0.1); border-radius: 4px; padding: 0 3px; }
 
-  /* Checkbox custom */
-  .check-circle {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    border: 3px solid #E5E5E5;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .check-circle.checked { background: #58CC02; border-color: #58CC02; }
+/* Animations */
+@keyframes popIn {
+  0%   { transform: scale(0.7) translateY(30px); opacity: 0; }
+  70%  { transform: scale(1.05); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.pop { animation: popIn 0.32s cubic-bezier(.36,.07,.19,.97) both; }
 
-  /* Tab active */
-  .tab-btn { border-bottom: 3px solid transparent; transition: all 0.2s; }
-  .tab-btn.active { border-color: #58CC02; color: #58CC02; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.fadeUp { animation: fadeUp 0.25s ease both; }
 
-  /* Overlay */
-  #wordModal { display: none; }
-  #wordModal.show { display: flex; }
+@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.shimmer { animation: shimmer 1.2s ease infinite; }
 
-  /* Subtitle area */
-  #subtitleArea b { color: #1CB0F6; background: rgba(28,176,246,0.1); border-radius:4px; padding: 0 3px; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.bounce { animation: bounce 1.8s ease infinite; }
 
-  /* YouTube player container */
-  #ytContainer iframe { border-radius: 0.75rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; display:inline-block; }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #F0F0F0; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb { background: #CFCFCF; border-radius: 10px; }
+/* Progress bar shimmer on complete */
+@keyframes barShimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+.bar-done {
+  background: linear-gradient(90deg, #58CC02 30%, #7AE52A 50%, #58CC02 70%);
+  background-size: 200% 100%;
+  animation: barShimmer 1.5s ease-in-out;
+}
 
-  /* Empty state bounce */
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-  .bounce { animation: bounce 1.8s infinite; }
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-  .star-burst {
-    display: inline-block;
-    animation: starPop 0.5s ease both;
-  }
-  @keyframes starPop {
-    0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
-    70%  { transform: scale(1.3) rotate(5deg); }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-
-  /* Notification toast */
-  #toast { transition: all 0.3s; }
+/* Toast */
+#toast { transition: opacity 0.3s, transform 0.3s; }
 </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <header class="bg-white border-b-4 border-gray-100 sticky top-0 z-40">
   <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <span class="text-3xl">🦜</span>
       <div>
-        <h1 class="text-xl font-black text-gray-800 leading-tight">LinguaBird</h1>
-        <p class="text-xs font-bold text-duo-gray">影音英文學習站</p>
+        <div class="text-lg font-black text-gray-800 leading-tight">LinguaBird</div>
+        <div class="text-xs font-bold text-gray-400">影音英文學習站</div>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1 bg-yellow-50 border-2 border-duo-yellow rounded-2xl px-3 py-1">
-        <span class="text-lg">🔥</span>
-        <span id="streakCount" class="font-black text-duo-yellow text-sm">0</span>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 bg-yellow-50 border-2 border-yellow-200 rounded-2xl px-3 py-1">
+        <span>🔥</span><span id="hStreak" class="font-black text-yellow-500 text-sm">0</span>
       </div>
-      <div class="flex items-center gap-1 bg-purple-50 border-2 border-duo-purple rounded-2xl px-3 py-1">
-        <span class="text-lg">💎</span>
-        <span id="gemCount" class="font-black text-purple-500 text-sm">0</span>
+      <div class="flex items-center gap-1 bg-purple-50 border-2 border-purple-200 rounded-2xl px-3 py-1">
+        <span>💎</span><span id="hGems" class="font-black text-purple-500 text-sm">0</span>
       </div>
     </div>
   </div>
 </header>
 
-<!-- Settings panel removed - using built-in Claude API -->
-
-<!-- ===== MAIN LAYOUT ===== -->
+<!-- MAIN -->
 <main class="max-w-5xl mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-  <!-- LEFT: Player + Subtitle -->
+  <!-- LEFT COL -->
   <section class="lg:col-span-2 space-y-4">
 
-    <!-- Video Input Card -->
-    <div class="card-duo p-4">
-      <h2 class="font-black text-gray-700 mb-3 text-base">🎬 載入影片</h2>
-      <div class="flex gap-2 mb-3 flex-wrap">
-        <button onclick="setMode('youtube')" id="modeYT" class="tab-btn active font-black text-sm px-4 py-2 rounded-xl text-gray-600">▶ YouTube</button>
-        <button onclick="setMode('local')" id="modeLocal" class="tab-btn font-black text-sm px-4 py-2 rounded-xl text-gray-600">📂 本地檔案</button>
+    <!-- Load Video Card -->
+    <div class="card p-4">
+      <div class="text-base font-black text-gray-700 mb-3">🎬 載入影片</div>
+      <div class="flex gap-1 mb-3 border-b border-gray-100">
+        <div class="tab on" id="tabYT" onclick="switchTab('yt')">▶ YouTube</div>
+        <div class="tab" id="tabLocal" onclick="switchTab('local')">📂 本地檔案</div>
       </div>
 
-      <!-- YouTube Input -->
-      <div id="ytInput">
+      <!-- YouTube -->
+      <div id="paneYT">
         <div class="flex gap-2">
-          <input id="ytUrl" type="text" placeholder="貼上 YouTube 連結..." class="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-duo-blue">
-          <button onclick="loadYouTube()" class="btn-duo btn-blue px-4 py-2 rounded-2xl font-bold text-sm">載入</button>
+          <input id="ytUrl" type="text" placeholder="貼上 YouTube 連結..." class="flex-1 border-2 border-gray-200 rounded-2xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-blue-duo">
+          <button class="btn btn-blue px-4 py-2 text-sm" onclick="loadYT()">載入</button>
         </div>
       </div>
 
-      <!-- Local File Input -->
-      <div id="localInput" class="hidden">
-        <label class="block w-full border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-duo-blue transition-colors">
-          <span class="text-2xl block mb-1">📁</span>
-          <span class="text-sm font-bold text-gray-500">點擊上傳 MP3 / MP4</span>
-          <input id="localFile" type="file" accept="audio/*,video/*" class="hidden" onchange="loadLocalFile(event)">
+      <!-- Local -->
+      <div id="paneLocal" class="hidden">
+        <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-5 text-center cursor-pointer hover:border-blue-duo transition-colors">
+          <div class="text-3xl mb-1">📁</div>
+          <div class="text-sm font-bold text-gray-500">點擊上傳 MP3 / MP4</div>
+          <input id="localFile" type="file" accept="audio/*,video/*" class="hidden" onchange="loadLocal(event)">
         </label>
       </div>
+
+      <!-- Save to library row -->
+      <div class="flex gap-2 mt-3">
+        <input id="mediaTitle" type="text" placeholder="輸入標題儲存到媒體庫..." class="flex-1 border-2 border-gray-200 rounded-2xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-green-duo">
+        <button class="btn btn-green px-4 py-2 text-sm" onclick="saveMedia()">💾 儲存</button>
+      </div>
     </div>
 
-    <!-- Save + Media Library Card -->
-    <div class="card-duo p-4">
+    <!-- Media Library -->
+    <div class="card p-4">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="font-black text-gray-700 text-base">🎞 影音媒體庫</h2>
-        <button onclick="deleteSelectedMedia()" class="btn-duo btn-pink px-3 py-1 rounded-2xl font-bold text-xs">🗑 刪除勾選</button>
+        <div class="text-base font-black text-gray-700">🎞 媒體庫</div>
+        <button class="btn btn-pink px-3 py-1 text-xs" onclick="deleteSelectedMedia()">🗑 刪除勾選</button>
       </div>
-      <!-- Save row -->
-      <div class="flex gap-2 items-center mb-3">
-        <input id="mediaTitleInput" type="text" placeholder="輸入標題後儲存到媒體庫..." class="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-duo-green">
-        <button onclick="saveMediaToLibrary()" class="btn-duo btn-green px-4 py-2 rounded-2xl font-bold text-sm whitespace-nowrap">💾 儲存</button>
-      </div>
-      <!-- Media list -->
-      <div id="mediaList" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
-      <!-- Empty state -->
-      <div id="mediaEmptyState" class="py-5 text-center">
+      <div id="mediaList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+      <div id="mediaEmpty" class="py-6 text-center">
         <div class="bounce text-3xl mb-2">🎬</div>
-        <p class="font-black text-gray-400 text-sm">還沒有儲存的影音！</p>
-        <p class="font-bold text-gray-300 text-xs mt-1">載入影片後輸入標題儲存</p>
+        <div class="font-black text-gray-300 text-sm">還沒有儲存的影音</div>
+        <div class="font-bold text-gray-200 text-xs mt-1">載入影片後輸入標題儲存</div>
       </div>
     </div>
 
-    <!-- Player Area -->
-    <div class="card-duo p-4">
-      <!-- YouTube Player -->
-      <div id="ytContainer" class="hidden">
+    <!-- Player -->
+    <div class="card p-4">
+      <div id="ytWrap" class="hidden">
         <div id="ytPlayer" class="w-full aspect-video bg-black rounded-xl overflow-hidden"></div>
       </div>
-      <!-- Local Player -->
-      <div id="localContainer" class="hidden">
-        <video id="localVideo" controls class="w-full rounded-xl bg-black" style="max-height:300px;"></video>
+      <div id="localWrap" class="hidden">
+        <video id="localVid" controls class="w-full rounded-xl bg-black max-h-72"></video>
       </div>
-      <!-- Placeholder -->
-      <div id="playerPlaceholder" class="w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex flex-col items-center justify-center">
-        <span class="text-5xl mb-3">🎥</span>
-        <p class="font-black text-gray-400 text-sm">載入影片後開始學習</p>
+      <div id="placeholder" class="w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex flex-col items-center justify-center">
+        <div class="text-5xl mb-2">🎥</div>
+        <div class="font-black text-gray-300 text-sm">載入影片後開始學習</div>
       </div>
 
-      <!-- Subtitle Area -->
+      <!-- Subtitle -->
       <div class="mt-3">
         <div class="flex items-center justify-between mb-2">
-          <h3 class="font-black text-gray-600 text-sm">📝 字幕預覽</h3>
-          <button onclick="analyzeWithGemini()" id="analyzeBtn" class="btn-duo btn-yellow px-3 py-1 rounded-2xl font-bold text-xs">✨ AI 分析字幕</button>
+          <div class="text-sm font-black text-gray-600">📝 字幕預覽</div>
+          <button id="analyzeBtn" class="btn btn-yellow px-3 py-1 text-xs" onclick="runAnalysis()">✨ AI 分析字幕</button>
         </div>
-        <div id="subtitleArea" class="bg-gray-50 border-2 border-gray-100 rounded-xl p-3 min-h-16 text-sm font-semibold text-gray-700 leading-relaxed">
-          <span class="text-gray-400">字幕將在 AI 分析後顯示於此...</span>
+        <div id="subArea" class="bg-gray-50 border-2 border-gray-100 rounded-xl p-3 min-h-14 text-sm font-semibold text-gray-600 leading-relaxed">
+          <span class="text-gray-300">字幕將在 AI 分析後顯示於此...</span>
         </div>
       </div>
     </div>
 
-    <!-- Subtitle Timeline (parsed sentences) -->
-    <div id="timelineCard" class="card-duo p-4 hidden">
-      <h3 class="font-black text-gray-700 mb-3 text-sm">⏱ 字幕時間軸</h3>
-      <div id="timelineList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+    <!-- Timeline -->
+    <div id="timelineCard" class="card p-4 hidden">
+      <div class="text-sm font-black text-gray-700 mb-3">⏱ 字幕時間軸</div>
+      <div id="timelineList" class="space-y-1 max-h-52 overflow-y-auto pr-1"></div>
     </div>
 
   </section>
 
-  <!-- RIGHT: Vocab List -->
+  <!-- RIGHT COL -->
   <section class="space-y-4">
 
-    <!-- Word List Card -->
-    <div class="card-duo p-4">
+    <!-- Word List -->
+    <div class="card p-4">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="font-black text-gray-700 text-base">📚 學習清單</h2>
-        <button onclick="deleteSelected()" class="btn-duo btn-pink px-3 py-1 rounded-2xl font-bold text-xs">🗑 刪除勾選</button>
+        <div class="text-base font-black text-gray-700">📚 學習清單</div>
+        <button class="btn btn-pink px-3 py-1 text-xs" onclick="deleteSelectedWords()">🗑 刪除勾選</button>
       </div>
-
-      <!-- Stats bar -->
       <div class="flex gap-2 mb-3">
         <div class="flex-1 bg-green-50 border-2 border-green-100 rounded-xl p-2 text-center">
-          <div id="totalWords" class="font-black text-duo-green text-lg">0</div>
+          <div id="statTotal" class="font-black text-green-600 text-lg">0</div>
           <div class="text-xs font-bold text-gray-400">總單字</div>
         </div>
         <div class="flex-1 bg-blue-50 border-2 border-blue-100 rounded-xl p-2 text-center">
-          <div id="masteredWords" class="font-black text-duo-blue text-lg">0</div>
+          <div id="statMastered" class="font-black text-blue-400 text-lg">0</div>
           <div class="text-xs font-bold text-gray-400">已掌握</div>
         </div>
       </div>
-
-      <!-- Word List -->
       <div id="wordList" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
-
-      <!-- Empty State -->
-      <div id="emptyState" class="hidden py-8 text-center">
+      <div id="wordEmpty" class="hidden py-8 text-center">
         <div class="bounce text-4xl mb-2">🌱</div>
-        <p class="font-black text-gray-400 text-sm">目前還沒有學習任務喔</p>
-        <p class="font-bold text-gray-300 text-xs mt-1">快開始吧！</p>
+        <div class="font-black text-gray-300 text-sm">還沒有學習任務喔</div>
+        <div class="font-bold text-gray-200 text-xs mt-1">快開始吧！</div>
       </div>
     </div>
 
-    <!-- Daily Goal -->
-    <div class="card-duo p-4">
-      <h3 class="font-black text-gray-700 text-sm mb-3">🎯 今日目標</h3>
-      <div class="space-y-3" id="dailyGoals">
+    <!-- Daily Goals -->
+    <div class="card p-4">
+      <div class="text-sm font-black text-gray-700 mb-3">🎯 今日目標</div>
+      <div class="space-y-3">
         <div>
-          <div class="flex justify-between text-xs font-bold text-gray-500 mb-1">
-            <span>觀看時間</span><span id="watchLabel">0/5 分鐘</span>
+          <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+            <span>觀看時間</span><span id="watchLabel">0 / 5 分鐘</span>
           </div>
           <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div id="watchBar" class="h-3 rounded-full bg-duo-blue transition-all duration-700" style="width:0%"></div>
+            <div id="watchBar" class="h-3 rounded-full bg-blue-duo transition-all duration-700" style="width:0%"></div>
           </div>
         </div>
         <div>
-          <div class="flex justify-between text-xs font-bold text-gray-500 mb-1">
-            <span>單字學習</span><span id="learnLabel">0/10 個</span>
+          <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
+            <span>單字學習</span><span id="learnLabel">0 / 10 個</span>
           </div>
           <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div id="learnBar" class="h-3 rounded-full bg-duo-green transition-all duration-700" style="width:0%"></div>
+            <div id="learnBar" class="h-3 rounded-full bg-green-duo transition-all duration-700" style="width:0%"></div>
           </div>
         </div>
       </div>
@@ -295,395 +253,315 @@
   </section>
 </main>
 
-<!-- ===== WORD CARD MODAL ===== -->
-<div id="wordModal" class="fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-  <div id="wordModalCard" class="card-duo max-w-sm w-full p-6 pop-in relative">
-    <!-- Close -->
-    <button onclick="closeWordModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 font-black text-lg">✕</button>
-
-    <!-- Word Image -->
+<!-- WORD MODAL -->
+<div id="modal" class="fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+  <div id="modalCard" class="card max-w-sm w-full p-6 pop relative">
+    <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-300 hover:text-gray-500 font-black text-xl leading-none">✕</button>
     <div class="w-full h-36 rounded-xl overflow-hidden bg-gray-100 mb-4">
-      <img id="wordImage" src="" alt="" class="w-full h-full object-cover">
+      <img id="mImg" src="" alt="" class="w-full h-full object-cover">
     </div>
-
-    <div class="flex items-start justify-between mb-1">
-      <h2 id="modalWord" class="text-2xl font-black text-gray-800"></h2>
-      <span id="modalType" class="text-xs font-bold bg-blue-100 text-duo-blue px-2 py-0.5 rounded-full"></span>
+    <div class="flex items-start gap-2 mb-1">
+      <div id="mWord" class="text-2xl font-black text-gray-800 flex-1"></div>
+      <span id="mType" class="text-xs font-bold bg-blue-50 text-blue-400 px-2 py-0.5 rounded-full mt-1 flex-shrink-0"></span>
     </div>
-    <p id="modalPronun" class="text-sm font-bold text-duo-gray mb-1"></p>
-    <p id="modalDef" class="text-sm font-semibold text-gray-600 mb-2"></p>
-    <p id="modalExample" class="text-xs font-semibold text-gray-400 italic mb-4 border-l-4 border-duo-blue pl-2"></p>
-
-    <!-- Review Progress -->
+    <div id="mPronun" class="text-sm font-bold text-gray-400 mb-1"></div>
+    <div id="mDef" class="text-sm font-semibold text-gray-600 mb-2"></div>
+    <div id="mExample" class="text-xs font-semibold text-gray-400 italic mb-4 border-l-4 border-blue-duo pl-2"></div>
     <div class="mb-4">
       <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-        <span>學習進度</span><span id="reviewLabel">複習 0/7 次</span>
+        <span>學習進度</span><span id="mReviewLabel">複習 0 / 7 次</span>
       </div>
       <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
-        <div id="reviewBar" class="h-4 rounded-full transition-all duration-700" style="width:0%"></div>
+        <div id="mReviewBar" class="h-4 rounded-full bg-blue-duo transition-all duration-700" style="width:0%"></div>
       </div>
     </div>
-
-    <!-- Actions -->
-    <div class="flex gap-2">
-      <button onclick="markReviewed()" class="btn-duo btn-green flex-1 py-2 rounded-2xl font-black text-sm">✅ 我記住了！</button>
-      <button onclick="addToList()" class="btn-duo btn-blue flex-1 py-2 rounded-2xl font-black text-sm">➕ 加入清單</button>
+    <div class="flex gap-2 mb-2">
+      <button onclick="markReviewed()" class="btn btn-green flex-1 py-2 text-sm">✅ 我記住了！</button>
+      <button onclick="addWord()" class="btn btn-blue flex-1 py-2 text-sm">➕ 加入清單</button>
     </div>
-    <button onclick="resumeVideo()" class="w-full mt-2 btn-duo btn-gray py-2 rounded-2xl font-bold text-sm text-gray-600">▶ 繼續播放</button>
+    <button onclick="resumePlay()" class="btn btn-gray w-full py-2 text-sm">▶ 繼續播放</button>
   </div>
 </div>
 
-<!-- ===== TOAST ===== -->
+<!-- TOAST -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none">
-  <div id="toastInner" class="bg-gray-800 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-xl"></div>
+  <div id="toastMsg" class="text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-xl bg-gray-800"></div>
 </div>
 
-<!-- ===== YOUTUBE IFrame API ===== -->
 <script src="https://www.youtube.com/iframe_api"></script>
-
 <script>
-// ============================================================
-// STATE
-// ============================================================
-let ytPlayer = null;
-let ytReady = false;
-let currentMode = 'youtube'; // 'youtube' | 'local'
-let subtitleData = []; // [{time, text, words:[{word, def, type, pronun, example}]}]
-let wordPauseTimer = null;
-let currentModalWord = null;
-let watchSeconds = 0;
-let watchTimer = null;
+// ─── CONSTANTS ────────────────────────────────────────────
+const LS = {
+  words:   'lb_words',
+  media:   'lb_media',
+  streak:  'lb_streak',
+  gems:    'lb_gems',
+  lastday: 'lb_lastday'
+};
 
-// localStorage keys
-const LS_WORDS  = 'lb_words';
-const LS_STREAK = 'lb_streak';
-const LS_GEMS   = 'lb_gems';
-const LS_LASTDAY = 'lb_lastday';
-const LS_MEDIA   = 'lb_media';
+// ─── STATE ────────────────────────────────────────────────
+let ytPlayer     = null;
+let ytApiReady   = false;
+let ytReady      = false;
+let pendingVid   = null;
+let mode         = 'yt';         // 'yt' | 'local'
+let subtitles    = [];
+let curWord      = null;
+let watchSecs    = 0;
+let watchTimer   = null;
+let subTimer     = null;
+let curMediaUrl  = null;
+let curMediaType = null;
+let curFileName  = null;
 
-// ============================================================
-// INIT
-// ============================================================
+// ─── INIT ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  renderWordList();
-  updateStats();
   checkStreak();
-  renderMediaList();
+  renderWords();
+  renderMedia();
+  updateStats();
 });
 
 function checkStreak() {
   const today = new Date().toDateString();
-  const last  = localStorage.getItem(LS_LASTDAY);
-  let streak  = parseInt(localStorage.getItem(LS_STREAK) || '0');
+  const last  = localStorage.getItem(LS.lastday);
+  let streak  = parseInt(localStorage.getItem(LS.streak) || '0');
   if (last !== today) {
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    if (last === yesterday) streak++;
-    else if (!last) streak = 1;
-    localStorage.setItem(LS_STREAK, streak);
-    localStorage.setItem(LS_LASTDAY, today);
+    const yest = new Date(Date.now() - 86400000).toDateString();
+    streak = last === yest ? streak + 1 : 1;
+    localStorage.setItem(LS.streak, streak);
+    localStorage.setItem(LS.lastday, today);
   }
-  document.getElementById('streakCount').textContent = streak;
-  document.getElementById('gemCount').textContent = localStorage.getItem(LS_GEMS) || '0';
+  document.getElementById('hStreak').textContent = streak;
+  document.getElementById('hGems').textContent = localStorage.getItem(LS.gems) || '0';
 }
 
-// ============================================================
-// SETTINGS
-// ============================================================
-
-
-
-// ============================================================
-// MODE SWITCH
-// ============================================================
-function setMode(mode) {
-  currentMode = mode;
-  document.getElementById('ytInput').classList.toggle('hidden', mode !== 'youtube');
-  document.getElementById('localInput').classList.toggle('hidden', mode !== 'local');
-  document.getElementById('modeYT').classList.toggle('active', mode === 'youtube');
-  document.getElementById('modeLocal').classList.toggle('active', mode === 'local');
+// ─── TABS ─────────────────────────────────────────────────
+function switchTab(t) {
+  mode = t;
+  document.getElementById('paneYT').classList.toggle('hidden', t !== 'yt');
+  document.getElementById('paneLocal').classList.toggle('hidden', t !== 'local');
+  document.getElementById('tabYT').classList.toggle('on', t === 'yt');
+  document.getElementById('tabLocal').classList.toggle('on', t === 'local');
 }
 
-
-// ============================================================
-// YOUTUBE PLAYER
-// ============================================================
-let ytApiReady = false;
-let pendingVideoId = null;
-
-// Called automatically by YouTube IFrame API once script loads
+// ─── YOUTUBE ──────────────────────────────────────────────
 function onYouTubeIframeAPIReady() {
   ytApiReady = true;
-  if (pendingVideoId) {
-    createYTPlayer(pendingVideoId);
-    pendingVideoId = null;
-  }
+  if (pendingVid) { createPlayer(pendingVid); pendingVid = null; }
 }
 
-function loadYouTube() {
+function loadYT() {
   const url = document.getElementById('ytUrl').value.trim();
-  const vid = extractYTId(url);
-  if (!vid) { showToast('❌ 無效的 YouTube 連結', '#FF4B4B'); return; }
-
-  document.getElementById('playerPlaceholder').classList.add('hidden');
-  document.getElementById('ytContainer').classList.remove('hidden');
-  document.getElementById('localContainer').classList.add('hidden');
-
-  currentMediaType = 'youtube';
-  currentMediaUrl = null;
-  currentMediaFileName = null;
-
+  const vid = getYTId(url);
+  if (!vid) { toast('❌ 無效的 YouTube 連結', '#FF4B4B'); return; }
+  curMediaType = 'yt';
+  curMediaUrl  = url;
+  curFileName  = null;
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('ytWrap').classList.remove('hidden');
+  document.getElementById('localWrap').classList.add('hidden');
   if (ytPlayer && ytReady) {
     ytPlayer.loadVideoById(vid);
   } else if (ytApiReady) {
-    createYTPlayer(vid);
+    createPlayer(vid);
   } else {
-    // API not loaded yet — save ID and wait for onYouTubeIframeAPIReady()
-    pendingVideoId = vid;
-    showToast('⏳ 正在載入 YouTube 播放器...', '#1CB0F6');
-    // Poll until ready (fallback for slow connections)
+    pendingVid = vid;
+    toast('⏳ 正在載入播放器...', '#1CB0F6');
     const poll = setInterval(() => {
-      if (ytApiReady) {
-        clearInterval(poll);
-        createYTPlayer(pendingVideoId);
-        pendingVideoId = null;
-      }
+      if (ytApiReady) { clearInterval(poll); createPlayer(pendingVid); pendingVid = null; }
     }, 300);
   }
 }
 
-function createYTPlayer(vid) {
+function createPlayer(vid) {
   document.getElementById('ytPlayer').innerHTML = '';
   ytPlayer = new YT.Player('ytPlayer', {
     height: '100%', width: '100%', videoId: vid,
     playerVars: { autoplay: 1, rel: 0, modestbranding: 1 },
     events: {
-      onReady: () => { ytReady = true; startWatchTimer(); },
-      onStateChange: onYTStateChange
+      onReady: () => { ytReady = true; startWatch(); },
+      onStateChange: (e) => {
+        if (e.data === YT.PlayerState.PLAYING) { startWatch(); startSubCheck(); }
+        else stopWatch();
+      }
     }
   });
 }
 
-function extractYTId(url) {
+function getYTId(url) {
   const m = url.match(/(?:youtu\.be\/|v=|\/shorts\/)([A-Za-z0-9_-]{11})(?:[?&%#]|$)/);
   return m ? m[1] : null;
 }
 
-function onYTStateChange(e) {
-  if (e.data === YT.PlayerState.PLAYING) {
-    startWatchTimer();
-    scheduleSubtitleCheck();
-  } else {
-    stopWatchTimer();
-  }
-}
-
-// ============================================================
-// LOCAL FILE PLAYER
-// ============================================================
-function loadLocalFile(event) {
-  const file = event.target.files[0];
+// ─── LOCAL FILE ───────────────────────────────────────────
+function loadLocal(e) {
+  const file = e.target.files[0];
   if (!file) return;
-  const url = URL.createObjectURL(file);
-  currentMediaUrl = url;
-  currentMediaType = 'local';
-  currentMediaFileName = file.name;
-  const vid = document.getElementById('localVideo');
-  vid.src = url;
-
-  document.getElementById('playerPlaceholder').classList.add('hidden');
-  document.getElementById('localContainer').classList.remove('hidden');
-  document.getElementById('ytContainer').classList.add('hidden');
-
-  vid.onplay = () => { startWatchTimer(); scheduleSubtitleCheck(); };
-  vid.onpause = stopWatchTimer;
-  vid.onended = stopWatchTimer;
-  showToast(`✅ 已載入：${file.name}`, '#58CC02');
+  curMediaType = 'local';
+  curMediaUrl  = URL.createObjectURL(file);
+  curFileName  = file.name;
+  const vid = document.getElementById('localVid');
+  vid.src = curMediaUrl;
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('localWrap').classList.remove('hidden');
+  document.getElementById('ytWrap').classList.add('hidden');
+  vid.onplay  = () => { startWatch(); startSubCheck(); };
+  vid.onpause = stopWatch;
+  vid.onended = stopWatch;
+  document.getElementById('mediaTitle').value = file.name.replace(/\.[^.]+$/, '');
+  toast('✅ 已載入：' + file.name, '#58CC02');
 }
 
-// ============================================================
-// MEDIA LIBRARY
-// ============================================================
-// Track current loaded media for saving
-let currentMediaUrl = null;
-let currentMediaType = null; // 'youtube' | 'local'
-let currentMediaFileName = null;
+// ─── WATCH TIMER ──────────────────────────────────────────
+function startWatch() {
+  if (watchTimer) return;
+  watchTimer = setInterval(() => {
+    watchSecs++;
+    const mins = Math.floor(watchSecs / 60);
+    const pct  = Math.min(100, (mins / 5) * 100);
+    document.getElementById('watchLabel').textContent = mins + ' / 5 分鐘';
+    document.getElementById('watchBar').style.width = pct + '%';
+  }, 1000);
+}
+function stopWatch() { clearInterval(watchTimer); watchTimer = null; }
 
-function getMediaList() { try { return JSON.parse(localStorage.getItem(LS_MEDIA) || '[]'); } catch { return []; } }
-function saveMediaList(list) { localStorage.setItem(LS_MEDIA, JSON.stringify(list)); }
+// ─── MEDIA LIBRARY ────────────────────────────────────────
+function getMedia() { try { return JSON.parse(localStorage.getItem(LS.media) || '[]'); } catch { return []; } }
+function setMedia(list) { localStorage.setItem(LS.media, JSON.stringify(list)); }
 
-function saveMediaToLibrary() {
-  const title = document.getElementById('mediaTitleInput').value.trim();
-  if (!title) { showToast('⚠️ 請輸入標題', '#FFC800'); return; }
-  if (!currentMediaUrl && currentMediaType !== 'youtube') {
-    showToast('⚠️ 請先載入影片或音檔', '#FFC800'); return;
-  }
-
+function saveMedia() {
+  const title = document.getElementById('mediaTitle').value.trim();
+  if (!title) { toast('⚠️ 請輸入標題', '#FFC800'); return; }
+  if (!curMediaType) { toast('⚠️ 請先載入影片', '#FFC800'); return; }
   const ytUrl = document.getElementById('ytUrl').value.trim();
-  const isYT  = currentMediaType === 'youtube' && ytUrl;
-
-  if (!isYT && !currentMediaUrl) { showToast('⚠️ 請先載入影片或音檔', '#FFC800'); return; }
-
-  const list = getMediaList();
-  const item = {
-    id: Date.now(),
+  const vid   = getYTId(ytUrl);
+  const list  = getMedia();
+  list.unshift({
+    id:       Date.now(),
     title,
-    type: isYT ? 'youtube' : 'local',
-    url: isYT ? ytUrl : null,         // YouTube: store URL; local: cannot store blob
-    fileName: currentMediaFileName || null,
-    thumb: isYT ? `https://img.youtube.com/vi/${extractYTId(ytUrl)}/mqdefault.jpg` : null,
-    addedAt: new Date().toLocaleString('zh-TW'),
+    type:     curMediaType,
+    url:      curMediaType === 'yt' ? ytUrl : null,
+    thumb:    curMediaType === 'yt' && vid ? 'https://img.youtube.com/vi/' + vid + '/mqdefault.jpg' : null,
+    fileName: curFileName,
+    addedAt:  new Date().toLocaleString('zh-TW'),
     selected: false
-  };
-  list.unshift(item);
-  saveMediaList(list);
-  renderMediaList();
-  document.getElementById('mediaTitleInput').value = '';
-  showToast(`✅ 已儲存「${title}」到媒體庫！`, '#58CC02');
+  });
+  setMedia(list);
+  renderMedia();
+  document.getElementById('mediaTitle').value = '';
+  toast('💾 已儲存「' + title + '」', '#58CC02');
 }
 
-function renderMediaList() {
-  const list = getMediaList();
-  const container = document.getElementById('mediaList');
-  const empty     = document.getElementById('mediaEmptyState');
-  container.innerHTML = '';
-
-  if (list.length === 0) { empty.classList.remove('hidden'); return; }
+function renderMedia() {
+  const list  = getMedia();
+  const el    = document.getElementById('mediaList');
+  const empty = document.getElementById('mediaEmpty');
+  el.innerHTML = '';
+  if (!list.length) { empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
-
   list.forEach((item, i) => {
     const div = document.createElement('div');
-    div.className = 'fade-in flex gap-3 items-center bg-white border-2 border-b-4 border-gray-100 rounded-2xl p-2 hover:border-gray-200 transition-all cursor-pointer group';
-
+    div.className = 'fadeUp flex gap-2 items-center card p-2 cursor-pointer group hover:border-gray-300';
     const thumb = item.thumb
-      ? `<img src="${item.thumb}" class="w-16 h-10 object-cover rounded-xl flex-shrink-0">`
-      : `<div class="w-16 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">${item.type === 'local' ? '🎵' : '▶'}</div>`;
-
-    const canPlay = item.type === 'youtube' || item.url;
-    const playBtn = canPlay
-      ? `<button onclick="playMediaItem(${i})" class="btn-duo btn-blue px-3 py-1 rounded-xl font-bold text-xs flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">▶ 播放</button>`
-      : `<span class="text-xs text-gray-300 font-bold flex-shrink-0 opacity-0 group-hover:opacity-100">本地檔需重新上傳</span>`;
-
-    div.innerHTML = `
-      <div class="check-circle ${item.selected ? 'checked' : ''}" onclick="toggleSelectMedia(${i}, event)">
-        ${item.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
-      </div>
-      ${thumb}
-      <div class="flex-1 min-w-0" onclick="playMediaItem(${i})">
-        <p class="font-black text-gray-800 text-sm truncate">${item.title}</p>
-        <p class="text-xs font-semibold text-gray-400">${item.type === 'youtube' ? '🎬 YouTube' : '📁 本地'} · ${item.addedAt}</p>
-      </div>
-      ${playBtn}
-    `;
-    container.appendChild(div);
+      ? '<img src="' + item.thumb + '" class="w-16 h-10 object-cover rounded-lg flex-shrink-0">'
+      : '<div class="w-16 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl flex-shrink-0">' + (item.type === 'local' ? '🎵' : '▶') + '</div>';
+    const canPlay = item.type === 'yt';
+    div.innerHTML =
+      '<div class="chk ' + (item.selected ? 'on' : '') + '" onclick="toggleMedia(' + i + ',event)">' +
+        (item.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
+      '</div>' +
+      thumb +
+      '<div class="flex-1 min-w-0" onclick="playMedia(' + i + ')">' +
+        '<div class="font-black text-gray-800 text-sm truncate">' + item.title + '</div>' +
+        '<div class="text-xs font-semibold text-gray-400">' + (item.type === 'yt' ? '🎬 YouTube' : '📁 本地') + ' · ' + item.addedAt + '</div>' +
+      '</div>' +
+      (canPlay ? '<button onclick="playMedia(' + i + ')" class="btn btn-blue px-3 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">▶</button>' : '<span class="text-xs text-gray-300 flex-shrink-0 opacity-0 group-hover:opacity-100">需重新上傳</span>');
+    el.appendChild(div);
   });
 }
 
-function playMediaItem(i) {
-  const list = getMediaList();
-  const item = list[i];
+function playMedia(i) {
+  const item = getMedia()[i];
   if (!item) return;
-
-  if (item.type === 'youtube') {
+  if (item.type === 'yt') {
     document.getElementById('ytUrl').value = item.url;
-    setMode('youtube');
-    loadYouTube();
-    // Auto-fill title
-    document.getElementById('mediaTitleInput').value = item.title;
-    showToast(`▶ 播放「${item.title}」`, '#1CB0F6');
+    switchTab('yt');
+    loadYT();
+    document.getElementById('mediaTitle').value = item.title;
+    toast('▶ 播放「' + item.title + '」', '#1CB0F6');
   } else {
-    showToast(`⚠️「${item.title}」是本地檔案，請重新上傳`, '#FFC800');
-    setMode('local');
+    toast('⚠️ 本地檔案請重新上傳', '#FFC800');
+    switchTab('local');
   }
 }
 
-function toggleSelectMedia(i, e) {
+function toggleMedia(i, e) {
   e.stopPropagation();
-  const list = getMediaList();
+  const list = getMedia();
   list[i].selected = !list[i].selected;
-  saveMediaList(list);
-  renderMediaList();
+  setMedia(list);
+  renderMedia();
 }
 
 function deleteSelectedMedia() {
-  let list = getMediaList();
+  let list = getMedia();
   const before = list.length;
   list = list.filter(m => !m.selected);
-  if (list.length === before) { showToast('⚠️ 請先勾選要刪除的項目', '#FFC800'); return; }
-  saveMediaList(list);
-  renderMediaList();
-  showToast(`🗑 已刪除 ${before - list.length} 個項目`, '#FF4B4B');
+  if (list.length === before) { toast('⚠️ 請先勾選要刪除的項目', '#FFC800'); return; }
+  setMedia(list);
+  renderMedia();
+  toast('🗑 已刪除 ' + (before - list.length) + ' 個項目', '#FF4B4B');
 }
 
-// ============================================================
-// WATCH TIMER
-// ============================================================
-function startWatchTimer() {
-  if (watchTimer) return;
-  watchTimer = setInterval(() => {
-    watchSeconds++;
-    updateWatchProgress();
-  }, 1000);
-}
-function stopWatchTimer() {
-  clearInterval(watchTimer);
-  watchTimer = null;
-}
-function updateWatchProgress() {
-  const mins = Math.floor(watchSeconds / 60);
-  const pct  = Math.min(100, (mins / 5) * 100);
-  document.getElementById('watchLabel').textContent = `${mins}/5 分鐘`;
-  document.getElementById('watchBar').style.width = pct + '%';
-}
-
-// ============================================================
-// AI ANALYSIS WITH REAL YOUTUBE TRANSCRIPT
-// ============================================================
-async function analyzeWithGemini() {
+// ─── AI ANALYSIS ──────────────────────────────────────────
+async function runAnalysis() {
   const btn = document.getElementById('analyzeBtn');
   btn.disabled = true;
   const ytUrl = document.getElementById('ytUrl').value.trim();
-  const vid = extractYTId(ytUrl);
+  const vid   = getYTId(ytUrl);
   try {
     if (vid) {
-      btn.textContent = '⏳ 抓取字幕中...';
-      showToast('📡 正在抓取 YouTube 真實字幕...', '#1CB0F6');
-      const transcript = await fetchYouTubeTranscript(vid);
-      if (transcript && transcript.length > 0) {
-        btn.textContent = '🧠 Claude 分析中...';
-        showToast('🧠 Claude 正在分析重點單字...', '#FFC800');
-        await analyzeTranscriptWithClaude(transcript);
+      btn.innerHTML = '<span class="spin">⏳</span> 抓取字幕...';
+      toast('📡 抓取 YouTube 真實字幕...', '#1CB0F6');
+      const transcript = await fetchTranscript(vid);
+      if (transcript && transcript.length) {
+        btn.innerHTML = '<span class="spin">🧠</span> Claude 分析中...';
+        toast('🧠 Claude 分析重點單字...', '#FFC800');
+        await analyzeReal(transcript);
         return;
       }
     }
-    btn.textContent = '🧠 Claude 生成中...';
-    showToast('💡 找不到字幕，Claude 自動生成...', '#FFC800');
-    await generateWithClaude(vid);
+    btn.innerHTML = '<span class="spin">🧠</span> Claude 生成中...';
+    toast('💡 找不到字幕，Claude 自動生成...', '#FFC800');
+    await generateFallback(vid);
   } catch(e) {
     console.error(e);
-    showToast('❌ 失敗，載入示範字幕', '#FF4B4B');
-    loadDemoSubtitles();
+    toast('❌ 失敗，載入示範字幕', '#FF4B4B');
+    loadDemo();
   } finally {
-    btn.textContent = '✨ AI 分析字幕';
+    btn.innerHTML = '✨ AI 分析字幕';
     btn.disabled = false;
   }
 }
 
-async function fetchYouTubeTranscript(vid) {
+async function fetchTranscript(vid) {
   try {
-    const res = await fetch('https://youtubetranscript.com/?server_vid2=' + vid);
+    const res  = await fetch('https://youtubetranscript.com/?server_vid2=' + vid);
     if (!res.ok) throw new Error('failed');
     const text = await res.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(text, 'text/xml');
+    const xml  = new DOMParser().parseFromString(text, 'text/xml');
     const nodes = xml.querySelectorAll('text');
     if (!nodes.length) return null;
     const items = [];
     nodes.forEach(t => {
       const start = parseFloat(t.getAttribute('start') || 0);
       const content = t.textContent
-        .replace(/&amp;/g,'&').replace(/&#39;/g,"'")
-        .replace(/&quot;/g,'"').replace(/
-/g,' ').trim();
+        .replace(/&amp;/g, '&')
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/\n/g, ' ')
+        .trim();
       if (content) items.push({ time: Math.round(start), text: content });
     });
     return items.length ? items : null;
@@ -693,435 +571,319 @@ async function fetchYouTubeTranscript(vid) {
   }
 }
 
-async function analyzeTranscriptWithClaude(transcriptItems) {
+async function analyzeReal(items) {
   const chunks = [];
-  for (let i = 0; i < transcriptItems.length; i += 3) {
-    const group = transcriptItems.slice(i, i + 3);
-    chunks.push({ time: group[0].time, text: group.map(g => g.text).join(' ') });
+  for (let i = 0; i < items.length; i += 3) {
+    const g = items.slice(i, i + 3);
+    chunks.push({ time: g[0].time, text: g.map(x => x.text).join(' ') });
   }
   const sample = chunks.slice(0, 20);
-  const transcriptText = sample.map(c => '[' + c.time + 's] ' + c.text).join('
-');
+  const transcriptText = sample.map(c => '[' + c.time + 's] ' + c.text).join('\n');
 
-  const prompt = 'You are an English learning assistant. Analyze this real YouTube transcript and identify important vocabulary.
+  const prompt = 'You are an English learning assistant. Here is a real YouTube transcript. Identify important vocabulary.\n\nTranscript:\n' + transcriptText + '\n\nReturn ONLY a valid JSON array. Each item:\n{"time":0,"text":"exact text","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]}\n\nUse EXACT text and timestamps. Set words:[] for simple chunks. Max 2 words per chunk. No markdown.';
 
-Transcript:
-' + transcriptText + '
+  const data = await callClaude(prompt, 2000);
+  const raw  = data.content[0].text.replace(/```json|```/g, '').trim();
+  const m    = raw.match(/\[[\s\S]*\]/);
+  if (!m) throw new Error('No JSON');
+  subtitles = JSON.parse(m[0]);
+  renderTimeline();
+  startSubCheck();
+  toast('✨ 真實字幕分析完成！', '#58CC02');
+  addGem();
+}
 
-Return ONLY a valid JSON array (no markdown, no explanation):
-[
-  {
-    "time": 0,
-    "text": "exact transcript text",
-    "words": [
-      {
-        "word": "vocabulary",
-        "type": "noun",
-        "pronun": "/pronunciation/",
-        "definition": "definition",
-        "example": "example sentence"
-      }
-    ]
-  }
-]
+async function generateFallback(vid) {
+  const title = document.getElementById('mediaTitle').value.trim();
+  const topic = title || (vid ? 'a YouTube video (id: ' + vid + ')' : 'an English educational video');
+  const prompt = 'Generate English learning content for a video about "' + topic + '". Return ONLY a valid JSON array:\n[{"time":0,"text":"sentence","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]}]\n8-10 sentences, timestamps 0-120s. No markdown.';
+  const data = await callClaude(prompt, 1500);
+  const raw  = data.content[0].text.replace(/```json|```/g, '').trim();
+  const m    = raw.match(/\[[\s\S]*\]/);
+  if (!m) throw new Error('No JSON');
+  subtitles = JSON.parse(m[0]);
+  renderTimeline();
+  startSubCheck();
+  toast('💡 AI 生成字幕完成！', '#58CC02');
+  addGem();
+}
 
-Use EXACT text and timestamps from the transcript. Set "words":[] for simple chunks. Max 2 words per chunk.';
-
+async function callClaude(prompt, maxTokens) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
+      max_tokens: maxTokens,
       messages: [{ role: 'user', content: prompt }]
     })
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error.message);
-  let raw = data.content[0].text.replace(/```json|```/g, '').trim();
-  const match = raw.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('No JSON');
-  subtitleData = JSON.parse(match[0]);
-  renderSubtitleTimeline();
-  playNextSubtitle();
-  showToast('✨ 真實字幕分析完成！', '#58CC02');
-  let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 1;
-  localStorage.setItem(LS_GEMS, gems);
-  document.getElementById('gemCount').textContent = gems;
+  return data;
 }
 
-async function generateWithClaude(vid) {
-  const mediaTitle = document.getElementById('mediaTitleInput')?.value.trim() || '';
-  const topic = mediaTitle || (vid ? 'a YouTube video (id: ' + vid + ')' : 'an English educational video');
-  const prompt = 'You are an English learning assistant. Generate English learning content for a video about "' + topic + '".
-
-Return ONLY a valid JSON array (no markdown):
-[
-  {
-    "time": 0,
-    "text": "sentence here",
-    "words": [{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]
-  }
-]
-
-Generate 8-10 sentences with timestamps 0-120s.';
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
-  let raw = data.content[0].text.replace(/```json|```/g, '').trim();
-  const match = raw.match(/\[[\s\S]*\]/);
-  if (!match) throw new Error('No JSON');
-  subtitleData = JSON.parse(match[0]);
-  renderSubtitleTimeline();
-  playNextSubtitle();
-  showToast('💡 AI 生成字幕完成！', '#58CC02');
-  let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 1;
-  localStorage.setItem(LS_GEMS, gems);
-  document.getElementById('gemCount').textContent = gems;
+function addGem() {
+  const g = parseInt(localStorage.getItem(LS.gems) || '0') + 1;
+  localStorage.setItem(LS.gems, g);
+  document.getElementById('hGems').textContent = g;
 }
 
-function loadDemoSubtitles() {
-  subtitleData = [
-    { time: 0,  text: "Welcome to today's lesson on artificial intelligence.", words: [{ word: "artificial intelligence", type: "noun phrase", pronun: "/ˌɑːrtɪˈfɪʃəl ɪnˈtelɪdʒəns/", definition: "The simulation of human intelligence by machines", example: "Artificial intelligence is transforming every industry." }] },
-    { time: 8,  text: "Machine learning is a subset of AI that learns from data.", words: [{ word: "machine learning", type: "noun phrase", pronun: "/məˈʃiːn ˈlɜːrnɪŋ/", definition: "AI systems that improve through experience", example: "Machine learning powers spam filters in your email." }] },
-    { time: 16, text: "Neural networks are inspired by the human brain's architecture.", words: [{ word: "neural networks", type: "noun phrase", pronun: "/ˈnjʊərəl ˈnetwɜːrks/", definition: "Computing systems modeled on biological neural networks", example: "Deep neural networks can recognize faces in photos." }] },
-    { time: 24, text: "Data preprocessing is a critical step in any ML pipeline.", words: [{ word: "preprocessing", type: "noun", pronun: "/priːˈprəʊsesɪŋ/", definition: "Preparing raw data before analysis", example: "Preprocessing removes noise and inconsistencies from datasets." }] },
-    { time: 32, text: "Overfitting occurs when a model memorizes training data too well.", words: [{ word: "overfitting", type: "noun", pronun: "/ˌoʊvərˈfɪtɪŋ/", definition: "When a model performs well on training data but poorly on new data", example: "We use cross-validation to detect overfitting." }] },
-    { time: 40, text: "Regularization techniques help prevent overfitting in models.", words: [{ word: "regularization", type: "noun", pronun: "/ˌreɡjʊləraɪˈzeɪʃən/", definition: "Methods to reduce model complexity and prevent overfitting", example: "L2 regularization adds a penalty term to the loss function." }] },
+function loadDemo() {
+  subtitles = [
+    { time:0,  text:"Welcome to today's lesson on artificial intelligence.", words:[{word:"artificial intelligence",type:"noun phrase",pronun:"/ˌɑːrtɪˈfɪʃəl ɪnˈtelɪdʒəns/",definition:"The simulation of human intelligence by machines",example:"Artificial intelligence is transforming every industry."}] },
+    { time:8,  text:"Machine learning is a subset of AI that learns from data.", words:[{word:"machine learning",type:"noun phrase",pronun:"/məˈʃiːn ˈlɜːrnɪŋ/",definition:"AI systems that improve through experience",example:"Machine learning powers spam filters in email."}] },
+    { time:16, text:"Neural networks are inspired by the human brain's architecture.", words:[{word:"neural networks",type:"noun phrase",pronun:"/ˈnjʊərəl ˈnetwɜːrks/",definition:"Computing systems modeled on biological neurons",example:"Deep neural networks can recognize faces in photos."}] },
+    { time:24, text:"Data preprocessing is a critical step in any ML pipeline.", words:[{word:"preprocessing",type:"noun",pronun:"/priːˈprəʊsesɪŋ/",definition:"Preparing raw data before analysis",example:"Preprocessing removes noise and inconsistencies from datasets."}] },
+    { time:32, text:"Overfitting occurs when a model memorizes training data too well.", words:[{word:"overfitting",type:"noun",pronun:"/ˌoʊvərˈfɪtɪŋ/",definition:"When a model performs well on training but poorly on new data",example:"We use cross-validation to detect overfitting."}] },
+    { time:40, text:"Regularization techniques help prevent overfitting in models.", words:[{word:"regularization",type:"noun",pronun:"/ˌreɡjʊləraɪˈzeɪʃən/",definition:"Methods to reduce model complexity",example:"L2 regularization adds a penalty to the loss function."}] },
   ];
-  renderSubtitleTimeline();
-  playNextSubtitle();
-  showToast('💡 已載入示範字幕', '#1CB0F6');
+  renderTimeline();
+  startSubCheck();
+  toast('💡 已載入示範字幕', '#1CB0F6');
 }
 
-// ============================================================
-// SUBTITLE TIMELINE
-// ============================================================
-function renderSubtitleTimeline() {
+// ─── SUBTITLE TIMELINE ────────────────────────────────────
+function renderTimeline() {
   const card = document.getElementById('timelineCard');
   const list = document.getElementById('timelineList');
   card.classList.remove('hidden');
   list.innerHTML = '';
-
-  subtitleData.forEach((item, i) => {
+  subtitles.forEach((item, i) => {
     const div = document.createElement('div');
-    div.id = `tl-${i}`;
+    div.id = 'tl' + i;
     div.className = 'flex gap-2 items-start p-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors';
-    div.onclick = () => seekTo(item.time);
-
-    // Build highlighted text
+    div.onclick = () => seek(item.time);
     let html = item.text;
-    if (item.words) {
-      item.words.forEach(w => {
-        const regex = new RegExp(`(${escapeRegex(w.word)})`, 'gi');
-        html = html.replace(regex, '<b>$1</b>');
-      });
-    }
-
-    div.innerHTML = `
-      <span class="text-xs font-black text-duo-blue mt-0.5 w-10 flex-shrink-0">${formatTime(item.time)}</span>
-      <span class="text-xs font-semibold text-gray-600 leading-relaxed" id="subtitleArea">${html}</span>
-    `;
+    (item.words || []).forEach(w => {
+      html = html.replace(new RegExp('(' + escRe(w.word) + ')', 'gi'), '<b>$1</b>');
+    });
+    div.innerHTML =
+      '<span class="text-xs font-black text-blue-400 w-10 flex-shrink-0 mt-0.5">' + fmtTime(item.time) + '</span>' +
+      '<span class="text-xs font-semibold text-gray-600 leading-relaxed">' + html + '</span>';
     list.appendChild(div);
   });
 }
 
-let subtitleIndex = 0;
-let subtitleCheckTimer = null;
-
-function scheduleSubtitleCheck() {
-  clearInterval(subtitleCheckTimer);
-  subtitleCheckTimer = setInterval(checkSubtitleTime, 500);
+function startSubCheck() {
+  clearInterval(subTimer);
+  subTimer = setInterval(checkSub, 500);
 }
 
-function checkSubtitleTime() {
-  if (subtitleData.length === 0) return;
-  const t = getCurrentTime();
+function checkSub() {
+  if (!subtitles.length) return;
+  const t = getTime();
   if (t === null) return;
-
-  for (let i = 0; i < subtitleData.length; i++) {
-    const item = subtitleData[i];
-    const nextTime = subtitleData[i+1]?.time ?? item.time + 8;
-
-    if (t >= item.time && t < nextTime) {
+  for (let i = 0; i < subtitles.length; i++) {
+    const item = subtitles[i];
+    const next = subtitles[i + 1]?.time ?? item.time + 8;
+    if (t >= item.time && t < next) {
       // Update subtitle display
       let html = item.text;
-      if (item.words) {
-        item.words.forEach(w => {
-          const regex = new RegExp(`(${escapeRegex(w.word)})`, 'gi');
-          html = html.replace(regex, '<b>$1</b>');
-        });
-      }
-      document.getElementById('subtitleArea').innerHTML = html;
-
+      (item.words || []).forEach(w => {
+        html = html.replace(new RegExp('(' + escRe(w.word) + ')', 'gi'), '<b>$1</b>');
+      });
+      document.getElementById('subArea').innerHTML = html;
       // Highlight timeline
-      document.querySelectorAll('[id^="tl-"]').forEach(el => el.classList.remove('bg-green-50', 'border-l-4', 'border-duo-green'));
-      const tlEl = document.getElementById(`tl-${i}`);
-      if (tlEl) { tlEl.classList.add('bg-green-50', 'border-l-4', 'border-duo-green'); tlEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-
-      // Pop word card if crossing the time boundary
+      document.querySelectorAll('[id^="tl"]').forEach(el => el.classList.remove('bg-green-50', 'border-l-4', 'border-green-duo'));
+      const tl = document.getElementById('tl' + i);
+      if (tl) { tl.classList.add('bg-green-50', 'border-l-4', 'border-green-duo'); tl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+      // Show word card
       if (item.words?.length && !item._shown) {
         item._shown = true;
-        pauseVideo();
-        setTimeout(() => showWordModal(item.words[0]), 300);
+        pausePlay();
+        setTimeout(() => showModal(item.words[0]), 300);
       }
       break;
     }
   }
 }
 
-function getCurrentTime() {
-  if (currentMode === 'youtube' && ytPlayer && ytReady) {
-    try { return ytPlayer.getCurrentTime(); } catch { return null; }
-  }
-  if (currentMode === 'local') {
-    return document.getElementById('localVideo').currentTime;
-  }
+function getTime() {
+  if (mode === 'yt' && ytPlayer && ytReady) { try { return ytPlayer.getCurrentTime(); } catch { return null; } }
+  if (mode === 'local') return document.getElementById('localVid').currentTime;
   return null;
 }
 
-function pauseVideo() {
-  if (currentMode === 'youtube' && ytPlayer && ytReady) { try { ytPlayer.pauseVideo(); } catch {} }
-  if (currentMode === 'local') { document.getElementById('localVideo').pause(); }
+function pausePlay() {
+  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.pauseVideo(); } catch {} }
+  if (mode === 'local') document.getElementById('localVid').pause();
 }
 
-function seekTo(t) {
-  if (currentMode === 'youtube' && ytPlayer && ytReady) { try { ytPlayer.seekTo(t, true); } catch {} }
-  if (currentMode === 'local') { document.getElementById('localVideo').currentTime = t; }
+function seek(t) {
+  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.seekTo(t, true); } catch {} }
+  if (mode === 'local') document.getElementById('localVid').currentTime = t;
 }
 
-function playNextSubtitle() {
-  // Just start checking
-  scheduleSubtitleCheck();
+function resumePlay() {
+  closeModal();
+  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.playVideo(); } catch {} }
+  if (mode === 'local') document.getElementById('localVid').play();
 }
 
-// ============================================================
-// WORD MODAL
-// ============================================================
-function showWordModal(wordObj) {
-  currentModalWord = wordObj;
-  document.getElementById('modalWord').textContent = wordObj.word;
-  document.getElementById('modalType').textContent = wordObj.type || 'n.';
-  document.getElementById('modalPronun').textContent = wordObj.pronun || '';
-  document.getElementById('modalDef').textContent = wordObj.definition || '';
-  document.getElementById('modalExample').textContent = wordObj.example ? `"${wordObj.example}"` : '';
-
-  // Image
-  const kw = encodeURIComponent(wordObj.word.split(' ')[0]);
-  document.getElementById('wordImage').src = `https://loremflickr.com/400/200/${kw}?lock=${Math.floor(Math.random()*100)}`;
-  document.getElementById('wordImage').onerror = function() { this.src = `https://loremflickr.com/400/200/education`; };
-
-  // Review progress from saved list
-  const words = getWords();
-  const existing = words.find(w => w.word.toLowerCase() === wordObj.word.toLowerCase());
-  const rc = existing?.review_count || 0;
-  setReviewBar(rc);
-
-  const modal = document.getElementById('wordModal');
-  modal.classList.add('show');
-  const card = document.getElementById('wordModalCard');
-  card.classList.remove('pop-in');
+// ─── WORD MODAL ───────────────────────────────────────────
+function showModal(w) {
+  curWord = w;
+  document.getElementById('mWord').textContent = w.word;
+  document.getElementById('mType').textContent = w.type || '';
+  document.getElementById('mPronun').textContent = w.pronun || '';
+  document.getElementById('mDef').textContent = w.definition || '';
+  document.getElementById('mExample').textContent = w.example ? '"' + w.example + '"' : '';
+  const kw = encodeURIComponent(w.word.split(' ')[0]);
+  const img = document.getElementById('mImg');
+  img.src = 'https://loremflickr.com/400/200/' + kw + '?lock=' + Math.floor(Math.random() * 100);
+  img.onerror = () => { img.src = 'https://loremflickr.com/400/200/education'; };
+  // Review count
+  const existing = getWords().find(x => x.word.toLowerCase() === w.word.toLowerCase());
+  setReviewBar(existing?.review_count || 0);
+  const modal = document.getElementById('modal');
+  modal.classList.add('on');
+  const card = document.getElementById('modalCard');
+  card.classList.remove('pop');
   void card.offsetWidth;
-  card.classList.add('pop-in');
+  card.classList.add('pop');
 }
 
 function setReviewBar(rc) {
   const pct = Math.min(100, Math.round((rc / 7) * 100));
-  const bar = document.getElementById('reviewBar');
-  document.getElementById('reviewLabel').textContent = `複習 ${rc}/7 次`;
+  document.getElementById('mReviewLabel').textContent = '複習 ' + rc + ' / 7 次';
+  const bar = document.getElementById('mReviewBar');
   bar.style.width = pct + '%';
-  if (pct >= 100) {
-    bar.className = 'h-4 rounded-full progress-shimmer';
-  } else if (pct >= 57) {
-    bar.className = 'h-4 rounded-full bg-duo-green transition-all duration-700';
-  } else if (pct >= 28) {
-    bar.className = 'h-4 rounded-full bg-duo-yellow transition-all duration-700';
-  } else {
-    bar.className = 'h-4 rounded-full bg-duo-blue transition-all duration-700';
-  }
+  bar.className = 'h-4 rounded-full transition-all duration-700 ' + (pct >= 100 ? 'bar-done' : pct >= 57 ? 'bg-green-duo' : pct >= 28 ? 'bg-yellow-duo' : 'bg-blue-duo');
 }
 
-function closeWordModal() {
-  document.getElementById('wordModal').classList.remove('show');
-}
-
-function resumeVideo() {
-  closeWordModal();
-  if (currentMode === 'youtube' && ytPlayer && ytReady) { try { ytPlayer.playVideo(); } catch {} }
-  if (currentMode === 'local') { document.getElementById('localVideo').play(); }
-}
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
 
 function markReviewed() {
-  if (!currentModalWord) return;
+  if (!curWord) return;
   const words = getWords();
-  const idx = words.findIndex(w => w.word.toLowerCase() === currentModalWord.word.toLowerCase());
+  const idx = words.findIndex(w => w.word.toLowerCase() === curWord.word.toLowerCase());
   if (idx >= 0) {
     words[idx].review_count = Math.min(7, (words[idx].review_count || 0) + 1);
     saveWords(words);
     setReviewBar(words[idx].review_count);
-
-    // Award gem on mastery
     if (words[idx].review_count === 7) {
-      let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 3;
-      localStorage.setItem(LS_GEMS, gems);
-      document.getElementById('gemCount').textContent = gems;
-      showToast('🎉 單字已掌握！獲得 3 💎', '#FFC800');
+      const g = parseInt(localStorage.getItem(LS.gems) || '0') + 3;
+      localStorage.setItem(LS.gems, g);
+      document.getElementById('hGems').textContent = g;
+      toast('🎉 單字已掌握！獲得 3 💎', '#FFC800');
     } else {
-      showToast(`✅ 複習 ${words[idx].review_count}/7 次！`, '#58CC02');
+      toast('✅ 複習 ' + words[idx].review_count + ' / 7 次！', '#58CC02');
     }
-    renderWordList();
+    renderWords();
     updateStats();
   } else {
-    addToList();
+    addWord();
   }
 }
 
-function addToList() {
-  if (!currentModalWord) return;
+function addWord() {
+  if (!curWord) return;
   const words = getWords();
-  const exists = words.find(w => w.word.toLowerCase() === currentModalWord.word.toLowerCase());
-  if (exists) { showToast('📚 已在清單中！', '#1CB0F6'); return; }
-
-  words.unshift({
-    id: Date.now(),
-    word: currentModalWord.word,
-    type: currentModalWord.type || '',
-    pronun: currentModalWord.pronun || '',
-    definition: currentModalWord.definition || '',
-    example: currentModalWord.example || '',
-    review_count: 0,
-    added: new Date().toISOString(),
-    selected: false
-  });
+  if (words.find(w => w.word.toLowerCase() === curWord.word.toLowerCase())) {
+    toast('📚 已在清單中！', '#1CB0F6'); return;
+  }
+  words.unshift({ id: Date.now(), word: curWord.word, type: curWord.type || '', pronun: curWord.pronun || '', definition: curWord.definition || '', example: curWord.example || '', review_count: 0, selected: false });
   saveWords(words);
-  renderWordList();
+  renderWords();
   updateStats();
-
-  // Update learn bar
-  const total = words.length;
-  const pct = Math.min(100, (total / 10) * 100);
-  document.getElementById('learnLabel').textContent = `${total}/10 個`;
-  document.getElementById('learnBar').style.width = pct + '%';
-
-  showToast(`➕ "${currentModalWord.word}" 已加入！`, '#58CC02');
-  closeWordModal();
+  toast('➕ "' + curWord.word + '" 已加入！', '#58CC02');
+  closeModal();
 }
 
-// ============================================================
-// WORD LIST RENDER
-// ============================================================
-function getWords() { try { return JSON.parse(localStorage.getItem(LS_WORDS) || '[]'); } catch { return []; } }
-function saveWords(words) { localStorage.setItem(LS_WORDS, JSON.stringify(words)); }
+// ─── WORD LIST ────────────────────────────────────────────
+function getWords()      { try { return JSON.parse(localStorage.getItem(LS.words) || '[]'); } catch { return []; } }
+function saveWords(list) { localStorage.setItem(LS.words, JSON.stringify(list)); }
 
-function renderWordList() {
+function renderWords() {
   const words = getWords();
-  const list = document.getElementById('wordList');
-  const empty = document.getElementById('emptyState');
-  list.innerHTML = '';
-
-  if (words.length === 0) {
-    empty.classList.remove('hidden');
-    return;
-  }
+  const el    = document.getElementById('wordList');
+  const empty = document.getElementById('wordEmpty');
+  el.innerHTML = '';
+  if (!words.length) { empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
-
   words.forEach((w, i) => {
-    const rc = w.review_count || 0;
+    const rc  = w.review_count || 0;
     const pct = Math.min(100, Math.round((rc / 7) * 100));
-    const barColor = pct >= 100 ? '#58CC02' : pct >= 57 ? '#58CC02' : pct >= 28 ? '#FFC800' : '#1CB0F6';
-
+    const col = pct >= 100 ? '#58CC02' : pct >= 57 ? '#58CC02' : pct >= 28 ? '#FFC800' : '#1CB0F6';
     const div = document.createElement('div');
-    div.className = 'fade-in bg-white border-2 border-gray-100 border-b-4 rounded-2xl p-3 flex gap-3 items-start hover:border-gray-200 transition-all';
-    div.innerHTML = `
-      <div class="check-circle ${w.selected ? 'checked' : ''}" onclick="toggleSelect(${i})">
-        ${w.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="font-black text-gray-800 text-sm">${w.word}</span>
-          <span class="text-xs font-bold bg-blue-50 text-duo-blue px-2 py-0.5 rounded-full">${w.type}</span>
-          ${rc >= 7 ? '<span class="text-xs font-bold bg-green-50 text-duo-green px-2 py-0.5 rounded-full star-burst">⭐ 已掌握</span>' : ''}
-        </div>
-        <p class="text-xs font-semibold text-gray-500 mt-0.5 truncate">${w.definition}</p>
-        <div class="mt-1.5 flex items-center gap-2">
-          <div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
-            <div class="h-1.5 rounded-full transition-all duration-700" style="width:${pct}%; background:${barColor}"></div>
-          </div>
-          <span class="text-xs font-bold text-gray-400 flex-shrink-0">${rc}/7</span>
-        </div>
-      </div>
-      <button onclick="quickReview(${i})" class="text-lg hover:scale-110 transition-transform flex-shrink-0" title="複習">📖</button>
-    `;
-    list.appendChild(div);
+    div.className = 'fadeUp card p-3 flex gap-3 items-start hover:border-gray-300';
+    div.innerHTML =
+      '<div class="chk ' + (w.selected ? 'on' : '') + '" onclick="toggleWord(' + i + ')">' +
+        (w.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
+      '</div>' +
+      '<div class="flex-1 min-w-0">' +
+        '<div class="flex items-center gap-2 flex-wrap">' +
+          '<span class="font-black text-gray-800 text-sm">' + w.word + '</span>' +
+          '<span class="text-xs font-bold bg-blue-50 text-blue-400 px-2 py-0.5 rounded-full">' + w.type + '</span>' +
+          (rc >= 7 ? '<span class="text-xs font-bold bg-green-50 text-green-600 px-2 py-0.5 rounded-full">⭐ 已掌握</span>' : '') +
+        '</div>' +
+        '<div class="text-xs font-semibold text-gray-400 mt-0.5 truncate">' + w.definition + '</div>' +
+        '<div class="flex items-center gap-2 mt-1.5">' +
+          '<div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">' +
+            '<div class="h-1.5 rounded-full transition-all duration-700" style="width:' + pct + '%;background:' + col + '"></div>' +
+          '</div>' +
+          '<span class="text-xs font-bold text-gray-400">' + rc + '/7</span>' +
+        '</div>' +
+      '</div>' +
+      '<button onclick="quickReview(' + i + ')" class="text-lg hover:scale-110 transition-transform flex-shrink-0" title="複習">📖</button>';
+    el.appendChild(div);
   });
 }
 
-function toggleSelect(i) {
+function toggleWord(i) {
   const words = getWords();
   words[i].selected = !words[i].selected;
   saveWords(words);
-  renderWordList();
+  renderWords();
 }
 
-function deleteSelected() {
+function deleteSelectedWords() {
   let words = getWords();
   const before = words.length;
   words = words.filter(w => !w.selected);
-  if (words.length === before) { showToast('⚠️ 請先勾選要刪除的單字', '#FFC800'); return; }
+  if (words.length === before) { toast('⚠️ 請先勾選要刪除的單字', '#FFC800'); return; }
   saveWords(words);
-  renderWordList();
+  renderWords();
   updateStats();
-  showToast(`🗑 已刪除 ${before - words.length} 個單字`, '#FF4B4B');
+  toast('🗑 已刪除 ' + (before - words.length) + ' 個單字', '#FF4B4B');
 }
 
 function quickReview(i) {
-  const words = getWords();
-  showWordModal(words[i]);
+  showModal(getWords()[i]);
 }
 
 function updateStats() {
-  const words = getWords();
+  const words   = getWords();
   const mastered = words.filter(w => (w.review_count || 0) >= 7).length;
-  document.getElementById('totalWords').textContent = words.length;
-  document.getElementById('masteredWords').textContent = mastered;
-
+  document.getElementById('statTotal').textContent    = words.length;
+  document.getElementById('statMastered').textContent = mastered;
   const pct = Math.min(100, (words.length / 10) * 100);
-  document.getElementById('learnLabel').textContent = `${words.length}/10 個`;
-  document.getElementById('learnBar').style.width = pct + '%';
+  document.getElementById('learnLabel').textContent   = words.length + ' / 10 個';
+  document.getElementById('learnBar').style.width     = pct + '%';
 }
 
-// ============================================================
-// UTILITIES
-// ============================================================
-function showToast(msg, color = '#333') {
-  const toast = document.getElementById('toast');
-  const inner = document.getElementById('toastInner');
-  inner.textContent = msg;
-  inner.style.background = color;
-  toast.style.opacity = '1';
-  toast.style.pointerEvents = 'auto';
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.pointerEvents = 'none';
+// ─── UTILS ────────────────────────────────────────────────
+let toastTimer = null;
+function toast(msg, color) {
+  const el  = document.getElementById('toast');
+  const msg_el = document.getElementById('toastMsg');
+  msg_el.textContent    = msg;
+  msg_el.style.background = color || '#333';
+  el.style.opacity      = '1';
+  el.style.transform    = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.style.opacity   = '0';
+    el.style.transform = 'translateX(-50%) translateY(10px)';
   }, 2800);
 }
 
-function formatTime(s) {
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return `${m}:${sec.toString().padStart(2, '0')}`;
+function fmtTime(s) {
+  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 }
 
-function escapeRegex(str) {
+function escRe(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 </script>
