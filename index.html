@@ -636,82 +636,156 @@ function updateWatchProgress() {
 }
 
 // ============================================================
-// GEMINI AI ANALYSIS
+// AI ANALYSIS WITH REAL YOUTUBE TRANSCRIPT
 // ============================================================
 async function analyzeWithGemini() {
   const btn = document.getElementById('analyzeBtn');
-  btn.textContent = '⏳ Claude 分析中...';
   btn.disabled = true;
-
-  const url = document.getElementById('ytUrl').value.trim();
-  const vid = extractYTId(url);
-  const mediaTitle = document.getElementById('mediaTitleInput')?.value.trim() || '';
-  const topic = mediaTitle || (vid ? `a YouTube educational video (id: ${vid})` : 'an English educational video');
-
-  const prompt = `You are an English learning assistant. Generate a realistic English transcript for a 2-minute educational video about "${topic}".
-
-Return ONLY a valid JSON array (no markdown fences, no explanation, no preamble) with this exact structure:
-[
-  {
-    "time": 0,
-    "text": "Welcome to today's lesson on machine learning.",
-    "words": [
-      {
-        "word": "machine learning",
-        "type": "noun phrase",
-        "pronun": "/məˈʃiːn ˈlɜːrnɪŋ/",
-        "definition": "A type of AI that enables computers to learn from data",
-        "example": "Machine learning powers recommendation systems like Netflix."
-      }
-    ]
-  }
-]
-
-Rules:
-- Generate 8-12 sentences with realistic timestamps (0-120 seconds)
-- Each sentence has 1-2 key vocabulary words/phrases worth learning
-- Focus on professional, academic, or topic-specific vocabulary
-- Make content engaging and educational
-- "text" is the full spoken sentence
-- Only include genuinely noteworthy vocabulary in "words"`;
-
+  const ytUrl = document.getElementById('ytUrl').value.trim();
+  const vid = extractYTId(ytUrl);
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-
-    let raw = data.content?.[0]?.text || '';
-    raw = raw.replace(/```json|```/g, '').trim();
-    // Extract JSON array if there's surrounding text
-    const match = raw.match(/\[[\s\S]*\]/);
-    if (!match) throw new Error('No JSON array found in response');
-    subtitleData = JSON.parse(match[0]);
-
-    renderSubtitleTimeline();
-    playNextSubtitle();
-    showToast('✨ Claude 分析完成！', '#58CC02');
-
-    // Award gem
-    let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 1;
-    localStorage.setItem(LS_GEMS, gems);
-    document.getElementById('gemCount').textContent = gems;
-
+    if (vid) {
+      btn.textContent = '⏳ 抓取字幕中...';
+      showToast('📡 正在抓取 YouTube 真實字幕...', '#1CB0F6');
+      const transcript = await fetchYouTubeTranscript(vid);
+      if (transcript && transcript.length > 0) {
+        btn.textContent = '🧠 Claude 分析中...';
+        showToast('🧠 Claude 正在分析重點單字...', '#FFC800');
+        await analyzeTranscriptWithClaude(transcript);
+        return;
+      }
+    }
+    btn.textContent = '🧠 Claude 生成中...';
+    showToast('💡 找不到字幕，Claude 自動生成...', '#FFC800');
+    await generateWithClaude(vid);
   } catch(e) {
     console.error(e);
-    showToast('❌ 分析失敗，載入示範字幕', '#FF4B4B');
+    showToast('❌ 失敗，載入示範字幕', '#FF4B4B');
     loadDemoSubtitles();
   } finally {
     btn.textContent = '✨ AI 分析字幕';
     btn.disabled = false;
   }
+}
+
+async function fetchYouTubeTranscript(vid) {
+  try {
+    const res = await fetch('https://youtubetranscript.com/?server_vid2=' + vid);
+    if (!res.ok) throw new Error('failed');
+    const text = await res.text();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, 'text/xml');
+    const nodes = xml.querySelectorAll('text');
+    if (!nodes.length) return null;
+    const items = [];
+    nodes.forEach(t => {
+      const start = parseFloat(t.getAttribute('start') || 0);
+      const content = t.textContent
+        .replace(/&amp;/g,'&').replace(/&#39;/g,"'")
+        .replace(/&quot;/g,'"').replace(/
+/g,' ').trim();
+      if (content) items.push({ time: Math.round(start), text: content });
+    });
+    return items.length ? items : null;
+  } catch(e) {
+    console.warn('Transcript fetch failed:', e);
+    return null;
+  }
+}
+
+async function analyzeTranscriptWithClaude(transcriptItems) {
+  const chunks = [];
+  for (let i = 0; i < transcriptItems.length; i += 3) {
+    const group = transcriptItems.slice(i, i + 3);
+    chunks.push({ time: group[0].time, text: group.map(g => g.text).join(' ') });
+  }
+  const sample = chunks.slice(0, 20);
+  const transcriptText = sample.map(c => '[' + c.time + 's] ' + c.text).join('
+');
+
+  const prompt = 'You are an English learning assistant. Analyze this real YouTube transcript and identify important vocabulary.
+
+Transcript:
+' + transcriptText + '
+
+Return ONLY a valid JSON array (no markdown, no explanation):
+[
+  {
+    "time": 0,
+    "text": "exact transcript text",
+    "words": [
+      {
+        "word": "vocabulary",
+        "type": "noun",
+        "pronun": "/pronunciation/",
+        "definition": "definition",
+        "example": "example sentence"
+      }
+    ]
+  }
+]
+
+Use EXACT text and timestamps from the transcript. Set "words":[] for simple chunks. Max 2 words per chunk.';
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  let raw = data.content[0].text.replace(/```json|```/g, '').trim();
+  const match = raw.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error('No JSON');
+  subtitleData = JSON.parse(match[0]);
+  renderSubtitleTimeline();
+  playNextSubtitle();
+  showToast('✨ 真實字幕分析完成！', '#58CC02');
+  let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 1;
+  localStorage.setItem(LS_GEMS, gems);
+  document.getElementById('gemCount').textContent = gems;
+}
+
+async function generateWithClaude(vid) {
+  const mediaTitle = document.getElementById('mediaTitleInput')?.value.trim() || '';
+  const topic = mediaTitle || (vid ? 'a YouTube video (id: ' + vid + ')' : 'an English educational video');
+  const prompt = 'You are an English learning assistant. Generate English learning content for a video about "' + topic + '".
+
+Return ONLY a valid JSON array (no markdown):
+[
+  {
+    "time": 0,
+    "text": "sentence here",
+    "words": [{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]
+  }
+]
+
+Generate 8-10 sentences with timestamps 0-120s.';
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  let raw = data.content[0].text.replace(/```json|```/g, '').trim();
+  const match = raw.match(/\[[\s\S]*\]/);
+  if (!match) throw new Error('No JSON');
+  subtitleData = JSON.parse(match[0]);
+  renderSubtitleTimeline();
+  playNextSubtitle();
+  showToast('💡 AI 生成字幕完成！', '#58CC02');
+  let gems = parseInt(localStorage.getItem(LS_GEMS) || '0') + 1;
+  localStorage.setItem(LS_GEMS, gems);
+  document.getElementById('gemCount').textContent = gems;
 }
 
 function loadDemoSubtitles() {
