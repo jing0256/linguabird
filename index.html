@@ -6,382 +6,393 @@
 <title>🦜 LinguaBird</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        green:  { duo: '#58CC02', dark: '#46A302' },
-        blue:   { duo: '#1CB0F6', dark: '#0A91D4' },
-        yellow: { duo: '#FFC800', dark: '#E5B400' },
-        red:    { duo: '#FF4B4B', dark: '#CC0000' },
-        pink:   { duo: '#FF86D0', dark: '#CC5EAA' },
-        purple: { duo: '#CE82FF', dark: '#A855F7' },
-      }
-    }
-  }
-}
-</script>
 <style>
 * { font-family: 'Nunito', sans-serif; box-sizing: border-box; }
 body { background: #F7F7F7; min-height: 100vh; }
 
-/* 3D Duolingo buttons */
-.btn { position: relative; border-bottom: 4px solid transparent; transition: transform 0.1s, border-bottom-width 0.1s; cursor: pointer; user-select: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; border-radius: 14px; }
-.btn:active { transform: translateY(3px); border-bottom-width: 1px !important; }
-.btn-green  { background: #58CC02; border-color: #46A302; color: #fff; }
-.btn-blue   { background: #1CB0F6; border-color: #0A91D4; color: #fff; }
-.btn-yellow { background: #FFC800; border-color: #E5B400; color: #5C3D00; }
-.btn-red    { background: #FF4B4B; border-color: #CC0000; color: #fff; }
-.btn-pink   { background: #FF86D0; border-color: #CC5EAA; color: #fff; }
-.btn-gray   { background: #E5E5E5; border-color: #CFCFCF; color: #666; }
-
-/* Cards */
-.card { background: #fff; border-radius: 16px; border: 2px solid #E5E5E5; border-bottom: 4px solid #E5E5E5; }
-.card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
-
-/* Checkbox */
-.chk { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #E5E5E5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.15s; }
-.chk.on { background: #58CC02; border-color: #46A302; }
-
-/* Tab */
-.tab { border-bottom: 3px solid transparent; transition: all 0.2s; font-weight: 800; cursor: pointer; padding: 6px 14px; border-radius: 10px 10px 0 0; color: #aaa; }
-.tab.on { border-color: #58CC02; color: #58CC02; }
-
-/* Modal */
-#modal { display: none; }
-#modal.on { display: flex; }
-
-/* Subtitle bold highlight */
-#subArea b { color: #1CB0F6; background: rgba(28,176,246,0.1); border-radius: 4px; padding: 0 3px; }
-
-/* Animations */
-@keyframes popIn {
-  0%   { transform: scale(0.7) translateY(30px); opacity: 0; }
-  70%  { transform: scale(1.05); }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
+.btn {
+  position: relative;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.1s, border-bottom-width 0.1s;
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-size: 13px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
 }
-.pop { animation: popIn 0.32s cubic-bezier(.36,.07,.19,.97) both; }
+.btn:active { transform: translateY(3px); border-bottom-width: 1px !important; }
+.btn-green  { background:#58CC02; border-bottom-color:#46A302; color:#fff; }
+.btn-blue   { background:#1CB0F6; border-bottom-color:#0A91D4; color:#fff; }
+.btn-yellow { background:#FFC800; border-bottom-color:#E5B400; color:#5C3D00; }
+.btn-pink   { background:#FF86D0; border-bottom-color:#CC5EAA; color:#fff; }
+.btn-gray   { background:#E5E5E5; border-bottom-color:#CFCFCF; color:#666; }
+.btn:disabled { opacity:0.6; cursor:not-allowed; transform:none !important; }
+
+.card {
+  background:#fff;
+  border-radius:16px;
+  border:2px solid #E5E5E5;
+  border-bottom:4px solid #E5E5E5;
+  transition:box-shadow 0.2s;
+}
+
+.chk {
+  width:26px; height:26px;
+  border-radius:50%;
+  border:3px solid #E5E5E5;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; cursor:pointer;
+  transition:all 0.15s;
+}
+.chk.on { background:#58CC02; border-color:#46A302; }
+
+.tab-btn {
+  padding:6px 16px;
+  font-weight:800;
+  font-size:13px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  color:#aaa;
+  transition:all 0.2s;
+  background:none;
+  border-top:none; border-left:none; border-right:none;
+}
+.tab-btn.on { border-bottom-color:#58CC02; color:#58CC02; }
+
+#wordModal { display:none; }
+#wordModal.show { display:flex; }
+
+#subArea b { color:#1CB0F6; background:rgba(28,176,246,0.12); border-radius:4px; padding:0 3px; }
+
+@keyframes popIn {
+  0%   { transform:scale(0.75) translateY(30px); opacity:0; }
+  70%  { transform:scale(1.04); }
+  100% { transform:scale(1) translateY(0); opacity:1; }
+}
+.pop { animation:popIn 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-.fadeUp { animation: fadeUp 0.25s ease both; }
-
-@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.6} }
-.shimmer { animation: shimmer 1.2s ease infinite; }
+.fadeUp { animation:fadeUp 0.25s ease both; }
 
 @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-.bounce { animation: bounce 1.8s ease infinite; }
+.bounce { animation:bounce 1.8s ease infinite; }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-.spin { animation: spin 0.8s linear infinite; display:inline-block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin { animation:spin 0.7s linear infinite; display:inline-block; }
 
-/* Progress bar shimmer on complete */
-@keyframes barShimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-.bar-done {
-  background: linear-gradient(90deg, #58CC02 30%, #7AE52A 50%, #58CC02 70%);
-  background-size: 200% 100%;
-  animation: barShimmer 1.5s ease-in-out;
+@keyframes barShimmer {
+  0%   { background-position:-200% center; }
+  100% { background-position:200% center; }
+}
+.bar-shimmer {
+  background:linear-gradient(90deg,#58CC02 30%,#7AE52A 50%,#58CC02 70%);
+  background-size:200% 100%;
+  animation:barShimmer 1.4s ease-in-out;
+  height:16px; border-radius:999px;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+input[type="text"] {
+  border:2px solid #E5E5E5;
+  border-radius:14px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+  outline:none;
+  transition:border-color 0.2s;
+  font-family:'Nunito',sans-serif;
+}
+input[type="text"]:focus { border-color:#1CB0F6; }
 
-/* Toast */
-#toast { transition: opacity 0.3s, transform 0.3s; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:#f0f0f0; border-radius:10px; }
+::-webkit-scrollbar-thumb { background:#ccc; border-radius:10px; }
+
+#toast { transition:opacity 0.3s, transform 0.3s; }
+
+@media (min-width:1024px) {
+  #layout { grid-template-columns: 2fr 1fr !important; }
+}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<header class="bg-white border-b-4 border-gray-100 sticky top-0 z-40">
-  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <span class="text-3xl">🦜</span>
+<header style="background:#fff;border-bottom:4px solid #f0f0f0;position:sticky;top:0;z-index:40">
+  <div style="max-width:1000px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:2rem">🦜</span>
       <div>
-        <div class="text-lg font-black text-gray-800 leading-tight">LinguaBird</div>
-        <div class="text-xs font-bold text-gray-400">影音英文學習站</div>
+        <div style="font-size:1.1rem;font-weight:900;color:#333;line-height:1.2">LinguaBird</div>
+        <div style="font-size:11px;font-weight:700;color:#bbb">影音英文學習站</div>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="flex items-center gap-1 bg-yellow-50 border-2 border-yellow-200 rounded-2xl px-3 py-1">
-        <span>🔥</span><span id="hStreak" class="font-black text-yellow-500 text-sm">0</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="background:#fffbeb;border:2px solid #fde68a;border-radius:20px;padding:4px 12px;display:flex;align-items:center;gap:4px">
+        <span>🔥</span><span id="hStreak" style="font-weight:900;color:#f59e0b;font-size:13px">0</span>
       </div>
-      <div class="flex items-center gap-1 bg-purple-50 border-2 border-purple-200 rounded-2xl px-3 py-1">
-        <span>💎</span><span id="hGems" class="font-black text-purple-500 text-sm">0</span>
+      <div style="background:#f5f3ff;border:2px solid #ddd6fe;border-radius:20px;padding:4px 12px;display:flex;align-items:center;gap:4px">
+        <span>💎</span><span id="hGems" style="font-weight:900;color:#8b5cf6;font-size:13px">0</span>
       </div>
     </div>
   </div>
 </header>
 
 <!-- MAIN -->
-<main class="max-w-5xl mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div style="max-width:1000px;margin:0 auto;padding:20px 16px">
+  <div id="layout" style="display:grid;grid-template-columns:1fr;gap:20px">
 
-  <!-- LEFT COL -->
-  <section class="lg:col-span-2 space-y-4">
+    <!-- LEFT COL -->
+    <div style="display:flex;flex-direction:column;gap:16px">
 
-    <!-- Load Video Card -->
-    <div class="card p-4">
-      <div class="text-base font-black text-gray-700 mb-3">🎬 載入影片</div>
-      <div class="flex gap-1 mb-3 border-b border-gray-100">
-        <div class="tab on" id="tabYT" onclick="switchTab('yt')">▶ YouTube</div>
-        <div class="tab" id="tabLocal" onclick="switchTab('local')">📂 本地檔案</div>
-      </div>
-
-      <!-- YouTube -->
-      <div id="paneYT">
-        <div class="flex gap-2">
-          <input id="ytUrl" type="text" placeholder="貼上 YouTube 連結..." class="flex-1 border-2 border-gray-200 rounded-2xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-blue-duo">
-          <button class="btn btn-blue px-4 py-2 text-sm" onclick="loadYT()">載入</button>
+      <!-- Load Card -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:15px;font-weight:900;color:#444;margin-bottom:12px">🎬 載入影片</div>
+        <div style="display:flex;gap:4px;border-bottom:2px solid #f0f0f0;margin-bottom:12px">
+          <button class="tab-btn on" id="tabYT"    onclick="switchTab('yt')">▶ YouTube</button>
+          <button class="tab-btn"   id="tabLocal" onclick="switchTab('local')">📂 本地檔案</button>
+        </div>
+        <div id="paneYT" style="display:flex;gap:8px">
+          <input type="text" id="ytUrl" placeholder="貼上 YouTube 連結..." style="flex:1">
+          <button class="btn btn-blue" onclick="loadYT()">載入</button>
+        </div>
+        <div id="paneLocal" style="display:none">
+          <label style="display:block;border:2px dashed #ddd;border-radius:14px;padding:20px;text-align:center;cursor:pointer">
+            <div style="font-size:2rem;margin-bottom:4px">📁</div>
+            <div style="font-size:13px;font-weight:700;color:#aaa">點擊上傳 MP3 / MP4</div>
+            <input type="file" id="localFile" accept="audio/*,video/*" style="display:none" onchange="loadLocal(event)">
+          </label>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input type="text" id="mediaTitle" placeholder="輸入標題儲存到媒體庫..." style="flex:1">
+          <button class="btn btn-green" onclick="saveMedia()">💾 儲存</button>
         </div>
       </div>
 
-      <!-- Local -->
-      <div id="paneLocal" class="hidden">
-        <label class="block border-2 border-dashed border-gray-300 rounded-2xl p-5 text-center cursor-pointer hover:border-blue-duo transition-colors">
-          <div class="text-3xl mb-1">📁</div>
-          <div class="text-sm font-bold text-gray-500">點擊上傳 MP3 / MP4</div>
-          <input id="localFile" type="file" accept="audio/*,video/*" class="hidden" onchange="loadLocal(event)">
-        </label>
-      </div>
-
-      <!-- Save to library row -->
-      <div class="flex gap-2 mt-3">
-        <input id="mediaTitle" type="text" placeholder="輸入標題儲存到媒體庫..." class="flex-1 border-2 border-gray-200 rounded-2xl px-3 py-2 text-sm font-semibold focus:outline-none focus:border-green-duo">
-        <button class="btn btn-green px-4 py-2 text-sm" onclick="saveMedia()">💾 儲存</button>
-      </div>
-    </div>
-
-    <!-- Media Library -->
-    <div class="card p-4">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-base font-black text-gray-700">🎞 媒體庫</div>
-        <button class="btn btn-pink px-3 py-1 text-xs" onclick="deleteSelectedMedia()">🗑 刪除勾選</button>
-      </div>
-      <div id="mediaList" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
-      <div id="mediaEmpty" class="py-6 text-center">
-        <div class="bounce text-3xl mb-2">🎬</div>
-        <div class="font-black text-gray-300 text-sm">還沒有儲存的影音</div>
-        <div class="font-bold text-gray-200 text-xs mt-1">載入影片後輸入標題儲存</div>
-      </div>
-    </div>
-
-    <!-- Player -->
-    <div class="card p-4">
-      <div id="ytWrap" class="hidden">
-        <div id="ytPlayer" class="w-full aspect-video bg-black rounded-xl overflow-hidden"></div>
-      </div>
-      <div id="localWrap" class="hidden">
-        <video id="localVid" controls class="w-full rounded-xl bg-black max-h-72"></video>
-      </div>
-      <div id="placeholder" class="w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex flex-col items-center justify-center">
-        <div class="text-5xl mb-2">🎥</div>
-        <div class="font-black text-gray-300 text-sm">載入影片後開始學習</div>
-      </div>
-
-      <!-- Subtitle -->
-      <div class="mt-3">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-sm font-black text-gray-600">📝 字幕預覽</div>
-          <button id="analyzeBtn" class="btn btn-yellow px-3 py-1 text-xs" onclick="runAnalysis()">✨ AI 分析字幕</button>
+      <!-- Media Library -->
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:15px;font-weight:900;color:#444">🎞 媒體庫</div>
+          <button class="btn btn-pink" style="padding:5px 12px;font-size:12px" onclick="deleteSelMedia()">🗑 刪除勾選</button>
         </div>
-        <div id="subArea" class="bg-gray-50 border-2 border-gray-100 rounded-xl p-3 min-h-14 text-sm font-semibold text-gray-600 leading-relaxed">
-          <span class="text-gray-300">字幕將在 AI 分析後顯示於此...</span>
+        <div id="mediaList" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;padding-right:4px"></div>
+        <div id="mediaEmpty" style="padding:20px 0;text-align:center">
+          <div class="bounce" style="font-size:2rem;margin-bottom:6px">🎬</div>
+          <div style="font-weight:900;color:#ccc;font-size:13px">還沒有儲存的影音</div>
         </div>
       </div>
-    </div>
 
-    <!-- Timeline -->
-    <div id="timelineCard" class="card p-4 hidden">
-      <div class="text-sm font-black text-gray-700 mb-3">⏱ 字幕時間軸</div>
-      <div id="timelineList" class="space-y-1 max-h-52 overflow-y-auto pr-1"></div>
-    </div>
-
-  </section>
-
-  <!-- RIGHT COL -->
-  <section class="space-y-4">
-
-    <!-- Word List -->
-    <div class="card p-4">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-base font-black text-gray-700">📚 學習清單</div>
-        <button class="btn btn-pink px-3 py-1 text-xs" onclick="deleteSelectedWords()">🗑 刪除勾選</button>
-      </div>
-      <div class="flex gap-2 mb-3">
-        <div class="flex-1 bg-green-50 border-2 border-green-100 rounded-xl p-2 text-center">
-          <div id="statTotal" class="font-black text-green-600 text-lg">0</div>
-          <div class="text-xs font-bold text-gray-400">總單字</div>
+      <!-- Player -->
+      <div class="card" style="padding:16px">
+        <div id="ytWrap" style="display:none">
+          <div id="ytPlayer" style="width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"></div>
         </div>
-        <div class="flex-1 bg-blue-50 border-2 border-blue-100 rounded-xl p-2 text-center">
-          <div id="statMastered" class="font-black text-blue-400 text-lg">0</div>
-          <div class="text-xs font-bold text-gray-400">已掌握</div>
+        <div id="localWrap" style="display:none">
+          <video id="localVid" controls style="width:100%;border-radius:12px;background:#000;max-height:280px"></video>
         </div>
-      </div>
-      <div id="wordList" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
-      <div id="wordEmpty" class="hidden py-8 text-center">
-        <div class="bounce text-4xl mb-2">🌱</div>
-        <div class="font-black text-gray-300 text-sm">還沒有學習任務喔</div>
-        <div class="font-bold text-gray-200 text-xs mt-1">快開始吧！</div>
-      </div>
-    </div>
-
-    <!-- Daily Goals -->
-    <div class="card p-4">
-      <div class="text-sm font-black text-gray-700 mb-3">🎯 今日目標</div>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-            <span>觀看時間</span><span id="watchLabel">0 / 5 分鐘</span>
+        <div id="placeholder" style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#f5f5f5,#e8e8e8);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-size:3rem;margin-bottom:8px">🎥</div>
+          <div style="font-weight:900;color:#ccc;font-size:13px">載入影片後開始學習</div>
+        </div>
+        <div style="margin-top:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="font-size:13px;font-weight:900;color:#555">📝 字幕預覽</div>
+            <button class="btn btn-yellow" id="analyzeBtn" style="padding:5px 12px;font-size:12px" onclick="runAnalysis()">✨ AI 分析字幕</button>
           </div>
-          <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div id="watchBar" class="h-3 rounded-full bg-blue-duo transition-all duration-700" style="width:0%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-            <span>單字學習</span><span id="learnLabel">0 / 10 個</span>
-          </div>
-          <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div id="learnBar" class="h-3 rounded-full bg-green-duo transition-all duration-700" style="width:0%"></div>
+          <div id="subArea" style="background:#fafafa;border:2px solid #f0f0f0;border-radius:12px;padding:12px;min-height:52px;font-size:13px;font-weight:600;color:#555;line-height:1.7">
+            <span style="color:#ccc">字幕將在 AI 分析後顯示於此...</span>
           </div>
         </div>
       </div>
+
+      <!-- Timeline -->
+      <div class="card" id="timelineCard" style="padding:16px;display:none">
+        <div style="font-size:13px;font-weight:900;color:#444;margin-bottom:10px">⏱ 字幕時間軸</div>
+        <div id="timelineList" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding-right:4px"></div>
+      </div>
+
     </div>
 
-  </section>
-</main>
+    <!-- RIGHT COL -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Word List -->
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:15px;font-weight:900;color:#444">📚 學習清單</div>
+          <button class="btn btn-pink" style="padding:5px 12px;font-size:12px" onclick="deleteSelWords()">🗑 刪除勾選</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="flex:1;background:#f0fdf4;border:2px solid #dcfce7;border-radius:12px;padding:8px;text-align:center">
+            <div id="statTotal" style="font-weight:900;color:#16a34a;font-size:1.2rem">0</div>
+            <div style="font-size:11px;font-weight:700;color:#aaa">總單字</div>
+          </div>
+          <div style="flex:1;background:#eff6ff;border:2px solid #dbeafe;border-radius:12px;padding:8px;text-align:center">
+            <div id="statMastered" style="font-weight:900;color:#2563eb;font-size:1.2rem">0</div>
+            <div style="font-size:11px;font-weight:700;color:#aaa">已掌握</div>
+          </div>
+        </div>
+        <div id="wordList" style="display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto;padding-right:4px"></div>
+        <div id="wordEmpty" style="display:none;padding:28px 0;text-align:center">
+          <div class="bounce" style="font-size:2.5rem;margin-bottom:6px">🌱</div>
+          <div style="font-weight:900;color:#ccc;font-size:13px">目前還沒有學習任務喔</div>
+          <div style="font-weight:700;color:#ddd;font-size:11px;margin-top:4px">快開始吧！</div>
+        </div>
+      </div>
+
+      <!-- Daily Goals -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:13px;font-weight:900;color:#444;margin-bottom:12px">🎯 今日目標</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#aaa;margin-bottom:4px">
+              <span>觀看時間</span><span id="watchLabel">0 / 5 分鐘</span>
+            </div>
+            <div style="background:#f0f0f0;border-radius:999px;height:12px;overflow:hidden">
+              <div id="watchBar" style="height:12px;border-radius:999px;background:#1CB0F6;width:0%;transition:width 0.7s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#aaa;margin-bottom:4px">
+              <span>單字學習</span><span id="learnLabel">0 / 10 個</span>
+            </div>
+            <div style="background:#f0f0f0;border-radius:999px;height:12px;overflow:hidden">
+              <div id="learnBar" style="height:12px;border-radius:999px;background:#58CC02;width:0%;transition:width 0.7s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- WORD MODAL -->
-<div id="modal" class="fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-  <div id="modalCard" class="card max-w-sm w-full p-6 pop relative">
-    <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-300 hover:text-gray-500 font-black text-xl leading-none">✕</button>
-    <div class="w-full h-36 rounded-xl overflow-hidden bg-gray-100 mb-4">
-      <img id="mImg" src="" alt="" class="w-full h-full object-cover">
+<div id="wordModal" style="position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);padding:16px">
+  <div id="modalCard" class="card pop" style="max-width:360px;width:100%;padding:24px;position:relative">
+    <button onclick="closeModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;font-size:18px;font-weight:900;color:#ccc;line-height:1">✕</button>
+    <div style="width:100%;height:140px;border-radius:12px;overflow:hidden;background:#f0f0f0;margin-bottom:16px">
+      <img id="mImg" src="" alt="" style="width:100%;height:100%;object-fit:cover">
     </div>
-    <div class="flex items-start gap-2 mb-1">
-      <div id="mWord" class="text-2xl font-black text-gray-800 flex-1"></div>
-      <span id="mType" class="text-xs font-bold bg-blue-50 text-blue-400 px-2 py-0.5 rounded-full mt-1 flex-shrink-0"></span>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:4px">
+      <div id="mWord" style="font-size:1.4rem;font-weight:900;color:#333;flex:1"></div>
+      <span id="mType" style="font-size:11px;font-weight:700;background:#eff6ff;color:#3b82f6;padding:3px 8px;border-radius:999px;flex-shrink:0;margin-top:4px"></span>
     </div>
-    <div id="mPronun" class="text-sm font-bold text-gray-400 mb-1"></div>
-    <div id="mDef" class="text-sm font-semibold text-gray-600 mb-2"></div>
-    <div id="mExample" class="text-xs font-semibold text-gray-400 italic mb-4 border-l-4 border-blue-duo pl-2"></div>
-    <div class="mb-4">
-      <div class="flex justify-between text-xs font-bold text-gray-400 mb-1">
-        <span>學習進度</span><span id="mReviewLabel">複習 0 / 7 次</span>
+    <div id="mPronun" style="font-size:13px;font-weight:700;color:#aaa;margin-bottom:4px"></div>
+    <div id="mDef"    style="font-size:13px;font-weight:600;color:#555;margin-bottom:8px"></div>
+    <div id="mExample" style="font-size:12px;font-weight:600;color:#aaa;font-style:italic;margin-bottom:16px;border-left:4px solid #1CB0F6;padding-left:8px"></div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#aaa;margin-bottom:4px">
+        <span>學習進度</span><span id="mRevLabel">複習 0 / 7 次</span>
       </div>
-      <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
-        <div id="mReviewBar" class="h-4 rounded-full bg-blue-duo transition-all duration-700" style="width:0%"></div>
+      <div style="background:#f0f0f0;border-radius:999px;height:16px;overflow:hidden">
+        <div id="mRevBar" style="height:16px;border-radius:999px;background:#1CB0F6;width:0%;transition:width 0.7s"></div>
       </div>
     </div>
-    <div class="flex gap-2 mb-2">
-      <button onclick="markReviewed()" class="btn btn-green flex-1 py-2 text-sm">✅ 我記住了！</button>
-      <button onclick="addWord()" class="btn btn-blue flex-1 py-2 text-sm">➕ 加入清單</button>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-green" style="flex:1" onclick="markReviewed()">✅ 我記住了！</button>
+      <button class="btn btn-blue"  style="flex:1" onclick="addWord()">➕ 加入清單</button>
     </div>
-    <button onclick="resumePlay()" class="btn btn-gray w-full py-2 text-sm">▶ 繼續播放</button>
+    <button class="btn btn-gray" style="width:100%" onclick="resumePlay()">▶ 繼續播放</button>
   </div>
 </div>
 
 <!-- TOAST -->
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none">
-  <div id="toastMsg" class="text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-xl bg-gray-800"></div>
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(0);z-index:60;opacity:0;pointer-events:none">
+  <div id="toastMsg" style="color:#fff;font-weight:800;font-size:13px;padding:10px 20px;border-radius:16px;background:#333;box-shadow:0 4px 20px rgba(0,0,0,0.2)"></div>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-// ─── CONSTANTS ────────────────────────────────────────────
-const LS = {
-  words:   'lb_words',
-  media:   'lb_media',
-  streak:  'lb_streak',
-  gems:    'lb_gems',
-  lastday: 'lb_lastday'
-};
+var KEYS = { words:'lb3_words', media:'lb3_media', streak:'lb3_streak', gems:'lb3_gems', lastday:'lb3_lastday' };
+var ytPlayer=null, ytApiReady=false, ytReady=false, pendingVid=null;
+var tabMode='yt', subtitles=[], curWord=null;
+var watchSecs=0, watchTmr=null, subTmr=null, toastTmr=null;
+var curMedType=null, curMedUrl=null, curFileName=null;
 
-// ─── STATE ────────────────────────────────────────────────
-let ytPlayer     = null;
-let ytApiReady   = false;
-let ytReady      = false;
-let pendingVid   = null;
-let mode         = 'yt';         // 'yt' | 'local'
-let subtitles    = [];
-let curWord      = null;
-let watchSecs    = 0;
-let watchTimer   = null;
-let subTimer     = null;
-let curMediaUrl  = null;
-let curMediaType = null;
-let curFileName  = null;
-
-// ─── INIT ─────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  checkStreak();
+window.addEventListener('DOMContentLoaded', function() {
+  initStreak();
   renderWords();
   renderMedia();
   updateStats();
 });
 
-function checkStreak() {
-  const today = new Date().toDateString();
-  const last  = localStorage.getItem(LS.lastday);
-  let streak  = parseInt(localStorage.getItem(LS.streak) || '0');
+function initStreak() {
+  var today  = new Date().toDateString();
+  var last   = localStorage.getItem(KEYS.lastday);
+  var streak = parseInt(localStorage.getItem(KEYS.streak) || '0');
   if (last !== today) {
-    const yest = new Date(Date.now() - 86400000).toDateString();
-    streak = last === yest ? streak + 1 : 1;
-    localStorage.setItem(LS.streak, streak);
-    localStorage.setItem(LS.lastday, today);
+    var yest = new Date(Date.now() - 86400000).toDateString();
+    streak   = (last === yest) ? streak + 1 : 1;
+    localStorage.setItem(KEYS.streak,  streak);
+    localStorage.setItem(KEYS.lastday, today);
   }
   document.getElementById('hStreak').textContent = streak;
-  document.getElementById('hGems').textContent = localStorage.getItem(LS.gems) || '0';
+  document.getElementById('hGems').textContent   = localStorage.getItem(KEYS.gems) || '0';
 }
 
-// ─── TABS ─────────────────────────────────────────────────
+/* ── TABS ── */
 function switchTab(t) {
-  mode = t;
-  document.getElementById('paneYT').classList.toggle('hidden', t !== 'yt');
-  document.getElementById('paneLocal').classList.toggle('hidden', t !== 'local');
-  document.getElementById('tabYT').classList.toggle('on', t === 'yt');
-  document.getElementById('tabLocal').classList.toggle('on', t === 'local');
+  tabMode = t;
+  document.getElementById('paneYT').style.display    = t === 'yt'    ? 'flex'  : 'none';
+  document.getElementById('paneLocal').style.display = t === 'local' ? 'block' : 'none';
+  document.getElementById('tabYT').className    = 'tab-btn' + (t === 'yt'    ? ' on' : '');
+  document.getElementById('tabLocal').className = 'tab-btn' + (t === 'local' ? ' on' : '');
 }
 
-// ─── YOUTUBE ──────────────────────────────────────────────
+/* ── YOUTUBE ── */
 function onYouTubeIframeAPIReady() {
   ytApiReady = true;
-  if (pendingVid) { createPlayer(pendingVid); pendingVid = null; }
+  if (pendingVid) { buildPlayer(pendingVid); pendingVid = null; }
+}
+
+function getVidId(url) {
+  var pats = [
+    /youtu\.be\/([A-Za-z0-9_-]{11})/,
+    /[?&]v=([A-Za-z0-9_-]{11})/,
+    /\/shorts\/([A-Za-z0-9_-]{11})/,
+    /\/embed\/([A-Za-z0-9_-]{11})/
+  ];
+  for (var i = 0; i < pats.length; i++) {
+    var m = url.match(pats[i]);
+    if (m) return m[1];
+  }
+  return null;
 }
 
 function loadYT() {
-  const url = document.getElementById('ytUrl').value.trim();
-  const vid = getYTId(url);
-  if (!vid) { toast('❌ 無效的 YouTube 連結', '#FF4B4B'); return; }
-  curMediaType = 'yt';
-  curMediaUrl  = url;
-  curFileName  = null;
-  document.getElementById('placeholder').classList.add('hidden');
-  document.getElementById('ytWrap').classList.remove('hidden');
-  document.getElementById('localWrap').classList.add('hidden');
-  if (ytPlayer && ytReady) {
-    ytPlayer.loadVideoById(vid);
-  } else if (ytApiReady) {
-    createPlayer(vid);
-  } else {
+  var url = document.getElementById('ytUrl').value.trim();
+  var vid = getVidId(url);
+  if (!vid) { showToast('❌ 無效的 YouTube 連結', '#FF4B4B'); return; }
+  curMedType = 'yt'; curMedUrl = url; curFileName = null;
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('ytWrap').style.display      = 'block';
+  document.getElementById('localWrap').style.display   = 'none';
+  if (ytPlayer && ytReady)    { ytPlayer.loadVideoById(vid); }
+  else if (ytApiReady)        { buildPlayer(vid); }
+  else {
     pendingVid = vid;
-    toast('⏳ 正在載入播放器...', '#1CB0F6');
-    const poll = setInterval(() => {
-      if (ytApiReady) { clearInterval(poll); createPlayer(pendingVid); pendingVid = null; }
+    showToast('⏳ 載入播放器中...', '#1CB0F6');
+    var poll = setInterval(function() {
+      if (ytApiReady) { clearInterval(poll); buildPlayer(pendingVid); pendingVid = null; }
     }, 300);
   }
 }
 
-function createPlayer(vid) {
+function buildPlayer(vid) {
   document.getElementById('ytPlayer').innerHTML = '';
   ytPlayer = new YT.Player('ytPlayer', {
-    height: '100%', width: '100%', videoId: vid,
-    playerVars: { autoplay: 1, rel: 0, modestbranding: 1 },
-    events: {
-      onReady: () => { ytReady = true; startWatch(); },
-      onStateChange: (e) => {
+    height:'100%', width:'100%', videoId:vid,
+    playerVars:{ autoplay:1, rel:0, modestbranding:1 },
+    events:{
+      onReady: function() { ytReady = true; startWatch(); },
+      onStateChange: function(e) {
         if (e.data === YT.PlayerState.PLAYING) { startWatch(); startSubCheck(); }
         else stopWatch();
       }
@@ -389,60 +400,53 @@ function createPlayer(vid) {
   });
 }
 
-function getYTId(url) {
-  const m = url.match(/(?:youtu\.be\/|v=|\/shorts\/)([A-Za-z0-9_-]{11})(?:[?&%#]|$)/);
-  return m ? m[1] : null;
-}
-
-// ─── LOCAL FILE ───────────────────────────────────────────
+/* ── LOCAL FILE ── */
 function loadLocal(e) {
-  const file = e.target.files[0];
+  var file = e.target.files[0];
   if (!file) return;
-  curMediaType = 'local';
-  curMediaUrl  = URL.createObjectURL(file);
-  curFileName  = file.name;
-  const vid = document.getElementById('localVid');
-  vid.src = curMediaUrl;
-  document.getElementById('placeholder').classList.add('hidden');
-  document.getElementById('localWrap').classList.remove('hidden');
-  document.getElementById('ytWrap').classList.add('hidden');
-  vid.onplay  = () => { startWatch(); startSubCheck(); };
-  vid.onpause = stopWatch;
-  vid.onended = stopWatch;
+  curMedType = 'local';
+  curMedUrl  = URL.createObjectURL(file);
+  curFileName = file.name;
+  var v = document.getElementById('localVid');
+  v.src = curMedUrl;
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('localWrap').style.display   = 'block';
+  document.getElementById('ytWrap').style.display      = 'none';
+  v.onplay  = function() { startWatch(); startSubCheck(); };
+  v.onpause = stopWatch;
+  v.onended = stopWatch;
   document.getElementById('mediaTitle').value = file.name.replace(/\.[^.]+$/, '');
-  toast('✅ 已載入：' + file.name, '#58CC02');
+  showToast('✅ 已載入：' + file.name, '#58CC02');
 }
 
-// ─── WATCH TIMER ──────────────────────────────────────────
+/* ── WATCH TIMER ── */
 function startWatch() {
-  if (watchTimer) return;
-  watchTimer = setInterval(() => {
+  if (watchTmr) return;
+  watchTmr = setInterval(function() {
     watchSecs++;
-    const mins = Math.floor(watchSecs / 60);
-    const pct  = Math.min(100, (mins / 5) * 100);
-    document.getElementById('watchLabel').textContent = mins + ' / 5 分鐘';
-    document.getElementById('watchBar').style.width = pct + '%';
+    var m   = Math.floor(watchSecs / 60);
+    var pct = Math.min(100, (m / 5) * 100);
+    document.getElementById('watchLabel').textContent = m + ' / 5 分鐘';
+    document.getElementById('watchBar').style.width   = pct + '%';
   }, 1000);
 }
-function stopWatch() { clearInterval(watchTimer); watchTimer = null; }
+function stopWatch() { clearInterval(watchTmr); watchTmr = null; }
 
-// ─── MEDIA LIBRARY ────────────────────────────────────────
-function getMedia() { try { return JSON.parse(localStorage.getItem(LS.media) || '[]'); } catch { return []; } }
-function setMedia(list) { localStorage.setItem(LS.media, JSON.stringify(list)); }
+/* ── MEDIA LIBRARY ── */
+function getMedia() { try { return JSON.parse(localStorage.getItem(KEYS.media) || '[]'); } catch(e) { return []; } }
+function setMedia(l) { localStorage.setItem(KEYS.media, JSON.stringify(l)); }
 
 function saveMedia() {
-  const title = document.getElementById('mediaTitle').value.trim();
-  if (!title) { toast('⚠️ 請輸入標題', '#FFC800'); return; }
-  if (!curMediaType) { toast('⚠️ 請先載入影片', '#FFC800'); return; }
-  const ytUrl = document.getElementById('ytUrl').value.trim();
-  const vid   = getYTId(ytUrl);
-  const list  = getMedia();
+  var title = document.getElementById('mediaTitle').value.trim();
+  if (!title)      { showToast('⚠️ 請輸入標題', '#FFC800'); return; }
+  if (!curMedType) { showToast('⚠️ 請先載入影片', '#FFC800'); return; }
+  var ytUrl = document.getElementById('ytUrl').value.trim();
+  var vid   = getVidId(ytUrl);
+  var list  = getMedia();
   list.unshift({
-    id:       Date.now(),
-    title,
-    type:     curMediaType,
-    url:      curMediaType === 'yt' ? ytUrl : null,
-    thumb:    curMediaType === 'yt' && vid ? 'https://img.youtube.com/vi/' + vid + '/mqdefault.jpg' : null,
+    id:title+Date.now(), title:title, type:curMedType,
+    url:      curMedType==='yt' ? ytUrl : null,
+    thumb:    (curMedType==='yt'&&vid) ? 'https://img.youtube.com/vi/'+vid+'/mqdefault.jpg' : null,
     fileName: curFileName,
     addedAt:  new Date().toLocaleString('zh-TW'),
     selected: false
@@ -450,441 +454,460 @@ function saveMedia() {
   setMedia(list);
   renderMedia();
   document.getElementById('mediaTitle').value = '';
-  toast('💾 已儲存「' + title + '」', '#58CC02');
+  showToast('💾 已儲存「' + title + '」', '#58CC02');
 }
 
 function renderMedia() {
-  const list  = getMedia();
-  const el    = document.getElementById('mediaList');
-  const empty = document.getElementById('mediaEmpty');
+  var list  = getMedia();
+  var el    = document.getElementById('mediaList');
+  var empty = document.getElementById('mediaEmpty');
   el.innerHTML = '';
-  if (!list.length) { empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
-  list.forEach((item, i) => {
-    const div = document.createElement('div');
-    div.className = 'fadeUp flex gap-2 items-center card p-2 cursor-pointer group hover:border-gray-300';
-    const thumb = item.thumb
-      ? '<img src="' + item.thumb + '" class="w-16 h-10 object-cover rounded-lg flex-shrink-0">'
-      : '<div class="w-16 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl flex-shrink-0">' + (item.type === 'local' ? '🎵' : '▶') + '</div>';
-    const canPlay = item.type === 'yt';
+  if (!list.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.forEach(function(item, idx) {
+    var div = document.createElement('div');
+    div.className = 'fadeUp';
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;background:#fff;border:2px solid #eee;border-bottom:4px solid #eee;border-radius:14px;padding:8px;cursor:pointer';
+    var thumbHtml = item.thumb
+      ? '<img src="'+item.thumb+'" style="width:60px;height:38px;object-fit:cover;border-radius:8px;flex-shrink:0">'
+      : '<div style="width:60px;height:38px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">'+(item.type==='local'?'🎵':'▶')+'</div>';
+    var chkSvg = item.selected ? '<svg width="11" height="11" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
     div.innerHTML =
-      '<div class="chk ' + (item.selected ? 'on' : '') + '" onclick="toggleMedia(' + i + ',event)">' +
-        (item.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
+      '<div class="chk'+(item.selected?' on':'')+'" onclick="toggleMed('+idx+',event)" style="width:22px;height:22px">'+chkSvg+'</div>' +
+      thumbHtml +
+      '<div style="flex:1;min-width:0" onclick="playMedItem('+idx+')">' +
+        '<div style="font-weight:900;color:#333;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+item.title+'</div>' +
+        '<div style="font-size:11px;font-weight:600;color:#aaa">'+(item.type==='yt'?'🎬 YouTube':'📁 本地')+' · '+item.addedAt+'</div>' +
       '</div>' +
-      thumb +
-      '<div class="flex-1 min-w-0" onclick="playMedia(' + i + ')">' +
-        '<div class="font-black text-gray-800 text-sm truncate">' + item.title + '</div>' +
-        '<div class="text-xs font-semibold text-gray-400">' + (item.type === 'yt' ? '🎬 YouTube' : '📁 本地') + ' · ' + item.addedAt + '</div>' +
-      '</div>' +
-      (canPlay ? '<button onclick="playMedia(' + i + ')" class="btn btn-blue px-3 py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">▶</button>' : '<span class="text-xs text-gray-300 flex-shrink-0 opacity-0 group-hover:opacity-100">需重新上傳</span>');
+      (item.type==='yt' ? '<button class="btn btn-blue" style="padding:4px 10px;font-size:11px;flex-shrink:0" onclick="playMedItem('+idx+')">▶</button>' : '');
     el.appendChild(div);
   });
 }
 
-function playMedia(i) {
-  const item = getMedia()[i];
+function playMedItem(i) {
+  var item = getMedia()[i];
   if (!item) return;
   if (item.type === 'yt') {
     document.getElementById('ytUrl').value = item.url;
     switchTab('yt');
     loadYT();
     document.getElementById('mediaTitle').value = item.title;
-    toast('▶ 播放「' + item.title + '」', '#1CB0F6');
+    showToast('▶ 播放「' + item.title + '」', '#1CB0F6');
   } else {
-    toast('⚠️ 本地檔案請重新上傳', '#FFC800');
+    showToast('⚠️ 本地檔案請重新上傳', '#FFC800');
     switchTab('local');
   }
 }
 
-function toggleMedia(i, e) {
+function toggleMed(i, e) {
   e.stopPropagation();
-  const list = getMedia();
+  var list = getMedia();
   list[i].selected = !list[i].selected;
   setMedia(list);
   renderMedia();
 }
 
-function deleteSelectedMedia() {
-  let list = getMedia();
-  const before = list.length;
-  list = list.filter(m => !m.selected);
-  if (list.length === before) { toast('⚠️ 請先勾選要刪除的項目', '#FFC800'); return; }
+function deleteSelMedia() {
+  var list = getMedia(), before = list.length;
+  list = list.filter(function(m) { return !m.selected; });
+  if (list.length === before) { showToast('⚠️ 請先勾選要刪除的項目', '#FFC800'); return; }
   setMedia(list);
   renderMedia();
-  toast('🗑 已刪除 ' + (before - list.length) + ' 個項目', '#FF4B4B');
+  showToast('🗑 已刪除 ' + (before-list.length) + ' 個項目', '#FF4B4B');
 }
 
-// ─── AI ANALYSIS ──────────────────────────────────────────
+/* ── AI ANALYSIS ── */
 async function runAnalysis() {
-  const btn = document.getElementById('analyzeBtn');
+  var btn   = document.getElementById('analyzeBtn');
+  var ytUrl = document.getElementById('ytUrl').value.trim();
+  var vid   = getVidId(ytUrl);
   btn.disabled = true;
-  const ytUrl = document.getElementById('ytUrl').value.trim();
-  const vid   = getYTId(ytUrl);
   try {
     if (vid) {
       btn.innerHTML = '<span class="spin">⏳</span> 抓取字幕...';
-      toast('📡 抓取 YouTube 真實字幕...', '#1CB0F6');
-      const transcript = await fetchTranscript(vid);
-      if (transcript && transcript.length) {
+      showToast('📡 正在抓取 YouTube 真實字幕...', '#1CB0F6');
+      var items = await fetchTranscript(vid);
+      if (items && items.length) {
         btn.innerHTML = '<span class="spin">🧠</span> Claude 分析中...';
-        toast('🧠 Claude 分析重點單字...', '#FFC800');
-        await analyzeReal(transcript);
+        showToast('🧠 Claude 分析重點單字...', '#FFC800');
+        await analyzeReal(items);
         return;
       }
+      showToast('⚠️ 找不到字幕，Claude 自動生成...', '#FFC800');
     }
     btn.innerHTML = '<span class="spin">🧠</span> Claude 生成中...';
-    toast('💡 找不到字幕，Claude 自動生成...', '#FFC800');
     await generateFallback(vid);
-  } catch(e) {
-    console.error(e);
-    toast('❌ 失敗，載入示範字幕', '#FF4B4B');
+  } catch(err) {
+    console.error(err);
+    showToast('❌ 發生錯誤，載入示範字幕', '#FF4B4B');
     loadDemo();
   } finally {
     btn.innerHTML = '✨ AI 分析字幕';
-    btn.disabled = false;
+    btn.disabled  = false;
   }
 }
 
 async function fetchTranscript(vid) {
-  try {
-    const res  = await fetch('https://youtubetranscript.com/?server_vid2=' + vid);
-    if (!res.ok) throw new Error('failed');
-    const text = await res.text();
-    const xml  = new DOMParser().parseFromString(text, 'text/xml');
-    const nodes = xml.querySelectorAll('text');
-    if (!nodes.length) return null;
-    const items = [];
-    nodes.forEach(t => {
-      const start = parseFloat(t.getAttribute('start') || 0);
-      const content = t.textContent
-        .replace(/&amp;/g, '&')
-        .replace(/&#39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/\n/g, ' ')
-        .trim();
-      if (content) items.push({ time: Math.round(start), text: content });
-    });
-    return items.length ? items : null;
-  } catch(e) {
-    console.warn('Transcript fetch failed:', e);
-    return null;
+  var r = await tryAllOrigins(vid);
+  if (r) return r;
+  r = await tryCorsproxy(vid);
+  if (r) return r;
+  return null;
+}
+
+async function tryAllOrigins(vid) {
+  var langs = ['en', 'zh-TW', 'zh', 'ja'];
+  for (var i = 0; i < langs.length; i++) {
+    try {
+      var lang  = langs[i];
+      var yturl = 'https://www.youtube.com/api/timedtext?v=' + vid + '&lang=' + lang + '&fmt=json3';
+      var proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(yturl);
+      var res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      var data   = await res.json();
+      var events = data.events || [];
+      var items  = [];
+      for (var j = 0; j < events.length; j++) {
+        var ev = events[j];
+        if (!ev.segs) continue;
+        var txt = '';
+        for (var k = 0; k < ev.segs.length; k++) txt += (ev.segs[k].utf8 || '');
+        txt = txt.replace(/\n/g, ' ').trim();
+        if (txt && ev.tStartMs != null) items.push({ time: Math.round(ev.tStartMs / 1000), text: txt });
+      }
+      if (items.length) { console.log('allorigins OK lang='+lang); return items; }
+    } catch(e) { continue; }
   }
+  return null;
+}
+
+async function tryCorsproxy(vid) {
+  var langs = ['en', 'zh-TW', 'zh'];
+  for (var i = 0; i < langs.length; i++) {
+    try {
+      var lang  = langs[i];
+      var yturl = 'https://www.youtube.com/api/timedtext?v=' + vid + '&lang=' + lang;
+      var proxy = 'https://corsproxy.io/?' + encodeURIComponent(yturl);
+      var res   = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      var txt  = await res.text();
+      var xml  = new DOMParser().parseFromString(txt, 'text/xml');
+      var nodes = xml.querySelectorAll('text');
+      if (!nodes.length) continue;
+      var items = [];
+      nodes.forEach(function(node) {
+        var s = parseFloat(node.getAttribute('start') || '0');
+        var c = node.textContent.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/\n/g,' ').trim();
+        if (c) items.push({ time: Math.round(s), text: c });
+      });
+      if (items.length) { console.log('corsproxy OK lang='+lang); return items; }
+    } catch(e) { continue; }
+  }
+  return null;
 }
 
 async function analyzeReal(items) {
-  const chunks = [];
-  for (let i = 0; i < items.length; i += 3) {
-    const g = items.slice(i, i + 3);
-    chunks.push({ time: g[0].time, text: g.map(x => x.text).join(' ') });
+  var chunks = [];
+  for (var i = 0; i < items.length; i += 3) {
+    var grp = items.slice(i, i+3);
+    chunks.push({ time: grp[0].time, text: grp.map(function(x){return x.text;}).join(' ') });
   }
-  const sample = chunks.slice(0, 20);
-  const transcriptText = sample.map(c => '[' + c.time + 's] ' + c.text).join('\n');
-
-  const prompt = 'You are an English learning assistant. Here is a real YouTube transcript. Identify important vocabulary.\n\nTranscript:\n' + transcriptText + '\n\nReturn ONLY a valid JSON array. Each item:\n{"time":0,"text":"exact text","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]}\n\nUse EXACT text and timestamps. Set words:[] for simple chunks. Max 2 words per chunk. No markdown.';
-
-  const data = await callClaude(prompt, 2000);
-  const raw  = data.content[0].text.replace(/```json|```/g, '').trim();
-  const m    = raw.match(/\[[\s\S]*\]/);
-  if (!m) throw new Error('No JSON');
-  subtitles = JSON.parse(m[0]);
+  var sample = chunks.slice(0, 20);
+  var ttext  = sample.map(function(c){ return '[' + c.time + 's] ' + c.text; }).join('\n');
+  var prompt = 'You are an English learning assistant. Analyze this real YouTube transcript and identify important vocabulary.\n\nTranscript:\n' + ttext + '\n\nReturn ONLY a valid JSON array (no markdown, no explanation):\n[{"time":5,"text":"exact text from transcript","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"meaning","example":"example"}]}]\n\nUse EXACT timestamps and text. Set words:[] for simple chunks. Max 2 words per chunk.';
+  var data = await callClaude(prompt, 2500);
+  subtitles = extractJson(data.content[0].text);
   renderTimeline();
   startSubCheck();
-  toast('✨ 真實字幕分析完成！', '#58CC02');
-  addGem();
+  showToast('✨ 真實字幕分析完成！', '#58CC02');
+  awardGem(1);
 }
 
 async function generateFallback(vid) {
-  const title = document.getElementById('mediaTitle').value.trim();
-  const topic = title || (vid ? 'a YouTube video (id: ' + vid + ')' : 'an English educational video');
-  const prompt = 'Generate English learning content for a video about "' + topic + '". Return ONLY a valid JSON array:\n[{"time":0,"text":"sentence","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]}]\n8-10 sentences, timestamps 0-120s. No markdown.';
-  const data = await callClaude(prompt, 1500);
-  const raw  = data.content[0].text.replace(/```json|```/g, '').trim();
-  const m    = raw.match(/\[[\s\S]*\]/);
-  if (!m) throw new Error('No JSON');
-  subtitles = JSON.parse(m[0]);
+  var title  = document.getElementById('mediaTitle').value.trim();
+  var topic  = title || (vid ? 'a YouTube video' : 'an English educational video');
+  var prompt = 'Generate an English learning transcript for a video about "' + topic + '".\n\nReturn ONLY a valid JSON array (no markdown):\n[{"time":0,"text":"sentence","words":[{"word":"vocab","type":"noun","pronun":"/p/","definition":"def","example":"ex"}]}]\n\nGenerate 8-10 sentences with timestamps from 0 to 120 seconds.';
+  var data = await callClaude(prompt, 1500);
+  subtitles = extractJson(data.content[0].text);
   renderTimeline();
   startSubCheck();
-  toast('💡 AI 生成字幕完成！', '#58CC02');
-  addGem();
+  showToast('💡 AI 生成字幕完成！', '#58CC02');
+  awardGem(1);
 }
 
-async function callClaude(prompt, maxTokens) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+async function callClaude(prompt, maxTok) {
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: maxTokens,
-      messages: [{ role: 'user', content: prompt }]
+      max_tokens: maxTok,
+      messages: [{ role:'user', content:prompt }]
     })
   });
-  const data = await res.json();
+  var data = await res.json();
   if (data.error) throw new Error(data.error.message);
   return data;
 }
 
-function addGem() {
-  const g = parseInt(localStorage.getItem(LS.gems) || '0') + 1;
-  localStorage.setItem(LS.gems, g);
+function extractJson(raw) {
+  var clean = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+  var s = clean.indexOf('[');
+  var e = clean.lastIndexOf(']');
+  if (s === -1 || e === -1) throw new Error('No JSON array found');
+  return JSON.parse(clean.slice(s, e+1));
+}
+
+function awardGem(n) {
+  var g = parseInt(localStorage.getItem(KEYS.gems) || '0') + n;
+  localStorage.setItem(KEYS.gems, g);
   document.getElementById('hGems').textContent = g;
 }
 
 function loadDemo() {
   subtitles = [
-    { time:0,  text:"Welcome to today's lesson on artificial intelligence.", words:[{word:"artificial intelligence",type:"noun phrase",pronun:"/ˌɑːrtɪˈfɪʃəl ɪnˈtelɪdʒəns/",definition:"The simulation of human intelligence by machines",example:"Artificial intelligence is transforming every industry."}] },
-    { time:8,  text:"Machine learning is a subset of AI that learns from data.", words:[{word:"machine learning",type:"noun phrase",pronun:"/məˈʃiːn ˈlɜːrnɪŋ/",definition:"AI systems that improve through experience",example:"Machine learning powers spam filters in email."}] },
-    { time:16, text:"Neural networks are inspired by the human brain's architecture.", words:[{word:"neural networks",type:"noun phrase",pronun:"/ˈnjʊərəl ˈnetwɜːrks/",definition:"Computing systems modeled on biological neurons",example:"Deep neural networks can recognize faces in photos."}] },
-    { time:24, text:"Data preprocessing is a critical step in any ML pipeline.", words:[{word:"preprocessing",type:"noun",pronun:"/priːˈprəʊsesɪŋ/",definition:"Preparing raw data before analysis",example:"Preprocessing removes noise and inconsistencies from datasets."}] },
-    { time:32, text:"Overfitting occurs when a model memorizes training data too well.", words:[{word:"overfitting",type:"noun",pronun:"/ˌoʊvərˈfɪtɪŋ/",definition:"When a model performs well on training but poorly on new data",example:"We use cross-validation to detect overfitting."}] },
-    { time:40, text:"Regularization techniques help prevent overfitting in models.", words:[{word:"regularization",type:"noun",pronun:"/ˌreɡjʊləraɪˈzeɪʃən/",definition:"Methods to reduce model complexity",example:"L2 regularization adds a penalty to the loss function."}] },
+    {time:0,  text:"Welcome to today's lesson on artificial intelligence.", words:[{word:"artificial intelligence",type:"noun phrase",pronun:"/ˌɑːrtɪˈfɪʃəl ɪnˈtelɪdʒəns/",definition:"The simulation of human intelligence by machines",example:"AI is transforming every industry."}]},
+    {time:10, text:"Machine learning is a subset of AI that learns from data.", words:[{word:"machine learning",type:"noun phrase",pronun:"/məˈʃiːn ˈlɜːrnɪŋ/",definition:"AI systems that improve through experience",example:"Machine learning powers spam filters."}]},
+    {time:20, text:"Neural networks are inspired by the human brain's architecture.", words:[{word:"neural networks",type:"noun phrase",pronun:"/ˈnjʊərəl ˈnetwɜːrks/",definition:"Computing systems modeled on biological neurons",example:"Neural networks can recognize faces."}]},
+    {time:30, text:"Data preprocessing is a critical step in any ML pipeline.", words:[{word:"preprocessing",type:"noun",pronun:"/priːˈprəʊsesɪŋ/",definition:"Preparing raw data before analysis",example:"Preprocessing removes noise from datasets."}]},
+    {time:40, text:"Overfitting occurs when a model memorizes training data too well.", words:[{word:"overfitting",type:"noun",pronun:"/ˌoʊvərˈfɪtɪŋ/",definition:"When a model performs poorly on new data",example:"Cross-validation helps detect overfitting."}]},
+    {time:50, text:"Regularization techniques help prevent overfitting in deep learning.", words:[{word:"regularization",type:"noun",pronun:"/ˌreɡjʊləraɪˈzeɪʃən/",definition:"Methods to reduce model complexity",example:"L2 regularization adds a penalty term."}]}
   ];
   renderTimeline();
   startSubCheck();
-  toast('💡 已載入示範字幕', '#1CB0F6');
+  showToast('💡 已載入示範字幕', '#1CB0F6');
 }
 
-// ─── SUBTITLE TIMELINE ────────────────────────────────────
+/* ── SUBTITLE TIMELINE ── */
 function renderTimeline() {
-  const card = document.getElementById('timelineCard');
-  const list = document.getElementById('timelineList');
-  card.classList.remove('hidden');
+  var card = document.getElementById('timelineCard');
+  var list = document.getElementById('timelineList');
+  card.style.display = 'block';
   list.innerHTML = '';
-  subtitles.forEach((item, i) => {
-    const div = document.createElement('div');
-    div.id = 'tl' + i;
-    div.className = 'flex gap-2 items-start p-2 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors';
-    div.onclick = () => seek(item.time);
-    let html = item.text;
-    (item.words || []).forEach(w => {
-      html = html.replace(new RegExp('(' + escRe(w.word) + ')', 'gi'), '<b>$1</b>');
-    });
+  subtitles.forEach(function(item, idx) {
+    var div = document.createElement('div');
+    div.id  = 'tl' + idx;
+    div.style.cssText = 'display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;cursor:pointer;transition:background 0.15s;border-left:4px solid transparent';
+    div.onclick = function() { seekTo(item.time); };
+    var html = item.text;
+    if (item.words) {
+      item.words.forEach(function(w) {
+        var esc = w.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var rx  = new RegExp('(' + esc + ')', 'gi');
+        html    = html.replace(rx, '<b style="color:#1CB0F6;background:rgba(28,176,246,0.1);border-radius:4px;padding:0 3px">$1</b>');
+      });
+    }
     div.innerHTML =
-      '<span class="text-xs font-black text-blue-400 w-10 flex-shrink-0 mt-0.5">' + fmtTime(item.time) + '</span>' +
-      '<span class="text-xs font-semibold text-gray-600 leading-relaxed">' + html + '</span>';
+      '<span style="font-size:11px;font-weight:900;color:#1CB0F6;width:36px;flex-shrink:0;margin-top:2px">' + fmtTime(item.time) + '</span>' +
+      '<span style="font-size:12px;font-weight:600;color:#555;line-height:1.6">' + html + '</span>';
     list.appendChild(div);
   });
 }
 
 function startSubCheck() {
-  clearInterval(subTimer);
-  subTimer = setInterval(checkSub, 500);
+  clearInterval(subTmr);
+  subTmr = setInterval(checkSub, 500);
 }
 
 function checkSub() {
   if (!subtitles.length) return;
-  const t = getTime();
+  var t = getCurTime();
   if (t === null) return;
-  for (let i = 0; i < subtitles.length; i++) {
-    const item = subtitles[i];
-    const next = subtitles[i + 1]?.time ?? item.time + 8;
+  for (var i = 0; i < subtitles.length; i++) {
+    var item = subtitles[i];
+    var next = (i+1 < subtitles.length) ? subtitles[i+1].time : item.time + 10;
     if (t >= item.time && t < next) {
-      // Update subtitle display
-      let html = item.text;
-      (item.words || []).forEach(w => {
-        html = html.replace(new RegExp('(' + escRe(w.word) + ')', 'gi'), '<b>$1</b>');
-      });
+      var html = item.text;
+      if (item.words) {
+        item.words.forEach(function(w) {
+          var esc = w.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          var rx  = new RegExp('(' + esc + ')', 'gi');
+          html    = html.replace(rx, '<b>$1</b>');
+        });
+      }
       document.getElementById('subArea').innerHTML = html;
-      // Highlight timeline
-      document.querySelectorAll('[id^="tl"]').forEach(el => el.classList.remove('bg-green-50', 'border-l-4', 'border-green-duo'));
-      const tl = document.getElementById('tl' + i);
-      if (tl) { tl.classList.add('bg-green-50', 'border-l-4', 'border-green-duo'); tl.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
-      // Show word card
-      if (item.words?.length && !item._shown) {
+      var allTl = document.querySelectorAll('[id^="tl"]');
+      for (var j = 0; j < allTl.length; j++) {
+        allTl[j].style.background   = '';
+        allTl[j].style.borderLeft   = '4px solid transparent';
+      }
+      var tlEl = document.getElementById('tl' + i);
+      if (tlEl) {
+        tlEl.style.background = '#f0fdf4';
+        tlEl.style.borderLeft = '4px solid #58CC02';
+        tlEl.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }
+      if (item.words && item.words.length && !item._shown) {
         item._shown = true;
         pausePlay();
-        setTimeout(() => showModal(item.words[0]), 300);
+        var w0 = item.words[0];
+        setTimeout(function() { showModal(w0); }, 350);
       }
       break;
     }
   }
 }
 
-function getTime() {
-  if (mode === 'yt' && ytPlayer && ytReady) { try { return ytPlayer.getCurrentTime(); } catch { return null; } }
-  if (mode === 'local') return document.getElementById('localVid').currentTime;
+function getCurTime() {
+  if (tabMode==='yt' && ytPlayer && ytReady) { try { return ytPlayer.getCurrentTime(); } catch(e) { return null; } }
+  if (tabMode==='local') return document.getElementById('localVid').currentTime;
   return null;
 }
-
 function pausePlay() {
-  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.pauseVideo(); } catch {} }
-  if (mode === 'local') document.getElementById('localVid').pause();
+  if (tabMode==='yt' && ytPlayer && ytReady) { try { ytPlayer.pauseVideo(); } catch(e) {} }
+  if (tabMode==='local') document.getElementById('localVid').pause();
 }
-
-function seek(t) {
-  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.seekTo(t, true); } catch {} }
-  if (mode === 'local') document.getElementById('localVid').currentTime = t;
+function seekTo(t) {
+  if (tabMode==='yt' && ytPlayer && ytReady) { try { ytPlayer.seekTo(t, true); } catch(e) {} }
+  if (tabMode==='local') document.getElementById('localVid').currentTime = t;
 }
-
 function resumePlay() {
   closeModal();
-  if (mode === 'yt' && ytPlayer && ytReady) { try { ytPlayer.playVideo(); } catch {} }
-  if (mode === 'local') document.getElementById('localVid').play();
+  if (tabMode==='yt' && ytPlayer && ytReady) { try { ytPlayer.playVideo(); } catch(e) {} }
+  if (tabMode==='local') document.getElementById('localVid').play();
 }
 
-// ─── WORD MODAL ───────────────────────────────────────────
+/* ── WORD MODAL ── */
 function showModal(w) {
   curWord = w;
-  document.getElementById('mWord').textContent = w.word;
-  document.getElementById('mType').textContent = w.type || '';
-  document.getElementById('mPronun').textContent = w.pronun || '';
-  document.getElementById('mDef').textContent = w.definition || '';
+  document.getElementById('mWord').textContent    = w.word;
+  document.getElementById('mType').textContent    = w.type    || '';
+  document.getElementById('mPronun').textContent  = w.pronun  || '';
+  document.getElementById('mDef').textContent     = w.definition || '';
   document.getElementById('mExample').textContent = w.example ? '"' + w.example + '"' : '';
-  const kw = encodeURIComponent(w.word.split(' ')[0]);
-  const img = document.getElementById('mImg');
-  img.src = 'https://loremflickr.com/400/200/' + kw + '?lock=' + Math.floor(Math.random() * 100);
-  img.onerror = () => { img.src = 'https://loremflickr.com/400/200/education'; };
-  // Review count
-  const existing = getWords().find(x => x.word.toLowerCase() === w.word.toLowerCase());
-  setReviewBar(existing?.review_count || 0);
-  const modal = document.getElementById('modal');
-  modal.classList.add('on');
-  const card = document.getElementById('modalCard');
+  var kw  = encodeURIComponent(w.word.split(' ')[0]);
+  var img = document.getElementById('mImg');
+  img.src = 'https://loremflickr.com/400/200/' + kw + '?lock=' + Math.floor(Math.random()*100);
+  img.onerror = function() { img.src = 'https://loremflickr.com/400/200/education'; };
+  var words = getWords(), existing = null;
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].word.toLowerCase() === w.word.toLowerCase()) { existing = words[i]; break; }
+  }
+  setRevBar(existing ? existing.review_count || 0 : 0);
+  var modal = document.getElementById('wordModal');
+  modal.classList.add('show');
+  var card = document.getElementById('modalCard');
   card.classList.remove('pop');
   void card.offsetWidth;
   card.classList.add('pop');
 }
 
-function setReviewBar(rc) {
-  const pct = Math.min(100, Math.round((rc / 7) * 100));
-  document.getElementById('mReviewLabel').textContent = '複習 ' + rc + ' / 7 次';
-  const bar = document.getElementById('mReviewBar');
+function setRevBar(rc) {
+  var pct = Math.min(100, Math.round((rc/7)*100));
+  document.getElementById('mRevLabel').textContent = '複習 ' + rc + ' / 7 次';
+  var bar = document.getElementById('mRevBar');
   bar.style.width = pct + '%';
-  bar.className = 'h-4 rounded-full transition-all duration-700 ' + (pct >= 100 ? 'bar-done' : pct >= 57 ? 'bg-green-duo' : pct >= 28 ? 'bg-yellow-duo' : 'bg-blue-duo');
+  if (pct >= 100) { bar.className = 'bar-shimmer'; }
+  else            { bar.className = ''; bar.style.background = pct>=57?'#58CC02':pct>=28?'#FFC800':'#1CB0F6'; }
 }
 
-function closeModal() { document.getElementById('modal').classList.remove('on'); }
+function closeModal() { document.getElementById('wordModal').classList.remove('show'); }
 
 function markReviewed() {
   if (!curWord) return;
-  const words = getWords();
-  const idx = words.findIndex(w => w.word.toLowerCase() === curWord.word.toLowerCase());
-  if (idx >= 0) {
-    words[idx].review_count = Math.min(7, (words[idx].review_count || 0) + 1);
-    saveWords(words);
-    setReviewBar(words[idx].review_count);
-    if (words[idx].review_count === 7) {
-      const g = parseInt(localStorage.getItem(LS.gems) || '0') + 3;
-      localStorage.setItem(LS.gems, g);
-      document.getElementById('hGems').textContent = g;
-      toast('🎉 單字已掌握！獲得 3 💎', '#FFC800');
-    } else {
-      toast('✅ 複習 ' + words[idx].review_count + ' / 7 次！', '#58CC02');
-    }
-    renderWords();
-    updateStats();
-  } else {
-    addWord();
+  var words = getWords(), idx = -1;
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].word.toLowerCase() === curWord.word.toLowerCase()) { idx = i; break; }
   }
+  if (idx >= 0) {
+    words[idx].review_count = Math.min(7, (words[idx].review_count||0) + 1);
+    saveWords(words);
+    setRevBar(words[idx].review_count);
+    if (words[idx].review_count >= 7) { awardGem(3); showToast('🎉 單字已掌握！獲得 3 💎', '#FFC800'); }
+    else { showToast('✅ 複習 ' + words[idx].review_count + ' / 7 次！', '#58CC02'); }
+    renderWords(); updateStats();
+  } else { addWord(); }
 }
 
 function addWord() {
   if (!curWord) return;
-  const words = getWords();
-  if (words.find(w => w.word.toLowerCase() === curWord.word.toLowerCase())) {
-    toast('📚 已在清單中！', '#1CB0F6'); return;
+  var words = getWords();
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].word.toLowerCase() === curWord.word.toLowerCase()) { showToast('📚 已在清單中！', '#1CB0F6'); return; }
   }
-  words.unshift({ id: Date.now(), word: curWord.word, type: curWord.type || '', pronun: curWord.pronun || '', definition: curWord.definition || '', example: curWord.example || '', review_count: 0, selected: false });
-  saveWords(words);
-  renderWords();
-  updateStats();
-  toast('➕ "' + curWord.word + '" 已加入！', '#58CC02');
+  words.unshift({ id:Date.now(), word:curWord.word, type:curWord.type||'', pronun:curWord.pronun||'',
+    definition:curWord.definition||'', example:curWord.example||'', review_count:0, selected:false });
+  saveWords(words); renderWords(); updateStats();
+  showToast('➕ "' + curWord.word + '" 已加入！', '#58CC02');
   closeModal();
 }
 
-// ─── WORD LIST ────────────────────────────────────────────
-function getWords()      { try { return JSON.parse(localStorage.getItem(LS.words) || '[]'); } catch { return []; } }
-function saveWords(list) { localStorage.setItem(LS.words, JSON.stringify(list)); }
+/* ── WORD LIST ── */
+function getWords()  { try { return JSON.parse(localStorage.getItem(KEYS.words)||'[]'); } catch(e) { return []; } }
+function saveWords(l){ localStorage.setItem(KEYS.words, JSON.stringify(l)); }
 
 function renderWords() {
-  const words = getWords();
-  const el    = document.getElementById('wordList');
-  const empty = document.getElementById('wordEmpty');
+  var words = getWords();
+  var el    = document.getElementById('wordList');
+  var empty = document.getElementById('wordEmpty');
   el.innerHTML = '';
-  if (!words.length) { empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
-  words.forEach((w, i) => {
-    const rc  = w.review_count || 0;
-    const pct = Math.min(100, Math.round((rc / 7) * 100));
-    const col = pct >= 100 ? '#58CC02' : pct >= 57 ? '#58CC02' : pct >= 28 ? '#FFC800' : '#1CB0F6';
-    const div = document.createElement('div');
-    div.className = 'fadeUp card p-3 flex gap-3 items-start hover:border-gray-300';
+  if (!words.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  words.forEach(function(w, idx) {
+    var rc  = w.review_count || 0;
+    var pct = Math.min(100, Math.round((rc/7)*100));
+    var col = rc>=7?'#58CC02':pct>=57?'#58CC02':pct>=28?'#FFC800':'#1CB0F6';
+    var div = document.createElement('div');
+    div.className = 'fadeUp';
+    div.style.cssText = 'background:#fff;border:2px solid #eee;border-bottom:4px solid #eee;border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start';
+    var chkSvg = w.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+    var badge  = rc>=7 ? '<span style="font-size:10px;font-weight:700;background:#f0fdf4;color:#16a34a;padding:2px 7px;border-radius:999px">⭐ 已掌握</span>' : '';
     div.innerHTML =
-      '<div class="chk ' + (w.selected ? 'on' : '') + '" onclick="toggleWord(' + i + ')">' +
-        (w.selected ? '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '') +
-      '</div>' +
-      '<div class="flex-1 min-w-0">' +
-        '<div class="flex items-center gap-2 flex-wrap">' +
-          '<span class="font-black text-gray-800 text-sm">' + w.word + '</span>' +
-          '<span class="text-xs font-bold bg-blue-50 text-blue-400 px-2 py-0.5 rounded-full">' + w.type + '</span>' +
-          (rc >= 7 ? '<span class="text-xs font-bold bg-green-50 text-green-600 px-2 py-0.5 rounded-full">⭐ 已掌握</span>' : '') +
+      '<div class="chk'+(w.selected?' on':'')+'" onclick="toggleWord('+idx+')" style="margin-top:2px">'+chkSvg+'</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">' +
+          '<span style="font-weight:900;color:#333;font-size:13px">'+w.word+'</span>' +
+          '<span style="font-size:10px;font-weight:700;background:#eff6ff;color:#3b82f6;padding:2px 7px;border-radius:999px">'+w.type+'</span>' +
+          badge +
         '</div>' +
-        '<div class="text-xs font-semibold text-gray-400 mt-0.5 truncate">' + w.definition + '</div>' +
-        '<div class="flex items-center gap-2 mt-1.5">' +
-          '<div class="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">' +
-            '<div class="h-1.5 rounded-full transition-all duration-700" style="width:' + pct + '%;background:' + col + '"></div>' +
+        '<div style="font-size:11px;font-weight:600;color:#aaa;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+w.definition+'</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-top:6px">' +
+          '<div style="flex:1;background:#f0f0f0;border-radius:999px;height:6px;overflow:hidden">' +
+            '<div style="height:6px;border-radius:999px;width:'+pct+'%;background:'+col+';transition:width 0.7s"></div>' +
           '</div>' +
-          '<span class="text-xs font-bold text-gray-400">' + rc + '/7</span>' +
+          '<span style="font-size:10px;font-weight:700;color:#aaa;flex-shrink:0">'+rc+'/7</span>' +
         '</div>' +
       '</div>' +
-      '<button onclick="quickReview(' + i + ')" class="text-lg hover:scale-110 transition-transform flex-shrink-0" title="複習">📖</button>';
+      '<button onclick="quickRev('+idx+')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;padding:0;flex-shrink:0">📖</button>';
     el.appendChild(div);
   });
 }
 
 function toggleWord(i) {
-  const words = getWords();
-  words[i].selected = !words[i].selected;
-  saveWords(words);
-  renderWords();
+  var words = getWords(); words[i].selected = !words[i].selected;
+  saveWords(words); renderWords();
 }
-
-function deleteSelectedWords() {
-  let words = getWords();
-  const before = words.length;
-  words = words.filter(w => !w.selected);
-  if (words.length === before) { toast('⚠️ 請先勾選要刪除的單字', '#FFC800'); return; }
-  saveWords(words);
-  renderWords();
-  updateStats();
-  toast('🗑 已刪除 ' + (before - words.length) + ' 個單字', '#FF4B4B');
+function deleteSelWords() {
+  var words = getWords(), before = words.length;
+  words = words.filter(function(w){ return !w.selected; });
+  if (words.length===before) { showToast('⚠️ 請先勾選要刪除的單字','#FFC800'); return; }
+  saveWords(words); renderWords(); updateStats();
+  showToast('🗑 已刪除 '+(before-words.length)+' 個單字','#FF4B4B');
 }
-
-function quickReview(i) {
-  showModal(getWords()[i]);
-}
-
+function quickRev(i) { showModal(getWords()[i]); }
 function updateStats() {
-  const words   = getWords();
-  const mastered = words.filter(w => (w.review_count || 0) >= 7).length;
+  var words = getWords(), mastered = 0;
+  words.forEach(function(w){ if((w.review_count||0)>=7) mastered++; });
   document.getElementById('statTotal').textContent    = words.length;
   document.getElementById('statMastered').textContent = mastered;
-  const pct = Math.min(100, (words.length / 10) * 100);
+  var pct = Math.min(100,(words.length/10)*100);
   document.getElementById('learnLabel').textContent   = words.length + ' / 10 個';
   document.getElementById('learnBar').style.width     = pct + '%';
 }
 
-// ─── UTILS ────────────────────────────────────────────────
-let toastTimer = null;
-function toast(msg, color) {
-  const el  = document.getElementById('toast');
-  const msg_el = document.getElementById('toastMsg');
-  msg_el.textContent    = msg;
-  msg_el.style.background = color || '#333';
-  el.style.opacity      = '1';
-  el.style.transform    = 'translateX(-50%) translateY(0)';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    el.style.opacity   = '0';
-    el.style.transform = 'translateX(-50%) translateY(10px)';
+/* ── UTILS ── */
+function showToast(msg, color) {
+  var el = document.getElementById('toast'), ml = document.getElementById('toastMsg');
+  ml.textContent = msg; ml.style.background = color || '#333';
+  el.style.opacity = '1'; el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(function() {
+    el.style.opacity = '0'; el.style.transform = 'translateX(-50%) translateY(8px)';
   }, 2800);
 }
-
 function fmtTime(s) {
-  return Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-}
-
-function escRe(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var m = Math.floor(s/60), ss = Math.floor(s%60);
+  return m + ':' + (ss<10?'0':'') + ss;
 }
 </script>
 </body>
